@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type timeSpan struct {
@@ -34,6 +35,17 @@ func (ts *timeSpan) Index(i int) int {
 	return x + 1
 }
 
+func (ts *timeSpan) IndexByTime(i string) (int, error) {
+	if !ts.isValidHourMinute(i) {
+		return 0, fmt.Errorf("invalid time format: HH:MM")
+	}
+	parts := strings.Split(i, ":")
+	hour, _ := strconv.Atoi(parts[0])
+	minute, _ := strconv.Atoi(parts[1])
+	n := hour*60 + minute
+	return ts.Index(n), nil
+}
+
 func (ts *timeSpan) Of(i int) string {
 	x := ts.Index(i)
 	return ts.timeSegs[x]
@@ -52,6 +64,19 @@ func (ts *timeSpan) OfTime(i string) (string, error) {
 
 func (ts *timeSpan) Segs() []string {
 	return ts.timeSegs
+}
+
+func (ts *timeSpan) TodaySegs() []string {
+	segs := ts.timeSegs
+	t, _ := ts.OfTime(time.Now().Format("15:04"))
+	todaySegs := []string{}
+	for _, seg := range segs {
+		if seg > t {
+			break
+		}
+		todaySegs = append(todaySegs, seg)
+	}
+	return todaySegs
 }
 
 func (ts *timeSpan) isValidHourMinute(i string) bool {
