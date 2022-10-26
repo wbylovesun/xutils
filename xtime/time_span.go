@@ -50,6 +50,10 @@ func (ts *timeSpan) OfTime(i string) (string, error) {
 	return ts.Of(n), nil
 }
 
+func (ts *timeSpan) Segs() []string {
+	return ts.timeSegs
+}
+
 func (ts *timeSpan) isValidHourMinute(i string) bool {
 	ptn, err := regexp.Compile(`^(\d|[01]\d|2[0-4]):(\d|[0-5]\d)$`)
 	if err != nil {
