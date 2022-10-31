@@ -51,6 +51,9 @@ func (ts *timeSpan) Of(i int) string {
 	return ts.timeSegs[x]
 }
 
+// OfTime 整切片值的时间会被归到下一个时间切片
+//
+// 如5分钟切片，09:00会归为09:05，09:10会归为09:15
 func (ts *timeSpan) OfTime(i string) (string, error) {
 	if !ts.isValidHourMinute(i) {
 		return "", fmt.Errorf("invalid time format: HH:MM")
@@ -69,7 +72,7 @@ func (ts *timeSpan) Segs() []string {
 func (ts *timeSpan) TodaySegs() []string {
 	segs := ts.timeSegs
 	t, _ := ts.OfTime(time.Now().Format("15:04"))
-	todaySegs := []string{}
+	var todaySegs []string
 	for _, seg := range segs {
 		if seg > t {
 			break
@@ -77,6 +80,28 @@ func (ts *timeSpan) TodaySegs() []string {
 		todaySegs = append(todaySegs, seg)
 	}
 	return todaySegs
+}
+
+// RangeSegs 以给定的from, to（包含）生成时间切片范围
+//
+// 如from=09:00, to=16:00，以30分钟为span，生成[09:00, 09:30, ..., 15:30, 16:00]
+func (ts *timeSpan) RangeSegs(from, to string) []string {
+	segs := ts.timeSegs
+	ftv, _ := ts.timeValue(from)
+	ttv, _ := ts.timeValue(to)
+	ft := ts.Of(ftv - 1)
+	tt := ts.Of(ttv - 1)
+	var rangeSegs []string
+	for _, seg := range segs {
+		if seg < ft {
+			continue
+		}
+		if seg > tt {
+			break
+		}
+		rangeSegs = append(rangeSegs, seg)
+	}
+	return rangeSegs
 }
 
 func (ts *timeSpan) isValidHourMinute(i string) bool {
@@ -88,6 +113,17 @@ func (ts *timeSpan) isValidHourMinute(i string) bool {
 		return true
 	}
 	return false
+}
+
+func (ts *timeSpan) timeValue(i string) (int, error) {
+	if !ts.isValidHourMinute(i) {
+		return 0, fmt.Errorf("invalid time format: HH:MM")
+	}
+	parts := strings.Split(i, ":")
+	hour, _ := strconv.Atoi(parts[0])
+	minute, _ := strconv.Atoi(parts[1])
+	n := hour*60 + minute
+	return n, nil
 }
 
 func NewTimeSpan(span int) (*timeSpan, error) {
