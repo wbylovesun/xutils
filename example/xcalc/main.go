@@ -13,6 +13,10 @@ type item struct {
 }
 
 func main() {
+	sequence()
+}
+
+func sequence() {
 	ts, _ := xtime.NewTimeSpan(5)
 	segs := ts.RangeSegs("09:00", "16:00")
 	fmt.Println(segs)
