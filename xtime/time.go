@@ -13,6 +13,8 @@ const (
 	YearMonthFormat = "200601"
 	YmdFormat       = "20060102"
 	DefaultFormat   = LongFormat
+	LongTimeFormat  = "15:04:05"
+	ShortTimeFormat = "15:04"
 )
 
 var daysBefore = [...]int32{
@@ -127,6 +129,17 @@ func LastDay(t time.Time) time.Time {
 		daysIn,
 		0, 0, 0, 0, time.Local,
 	)
+}
+
+func AddDays(t time.Time, days int) time.Time {
+	duration := time.Duration(days) * 24 * time.Hour
+	var t2 time.Time
+	if t.IsZero() {
+		t2 = time.Now()
+	} else {
+		t2 = t
+	}
+	return t2.Add(duration)
 }
 
 func IsLeap(year int) bool {

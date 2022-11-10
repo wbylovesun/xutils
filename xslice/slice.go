@@ -1,7 +1,10 @@
 package xslice
 
 import (
+	"fmt"
+	"reflect"
 	"sort"
+	"strings"
 )
 
 func RmDuplicate[T SliceElementType](data []T) []T {
@@ -125,4 +128,20 @@ func Max[T SliceElementType](data []T) *T {
 		}
 	}
 	return &max
+}
+
+func Join[T SliceElementType](data []T, sep string) string {
+	s := make([]string, len(data))
+	var typeDetector T
+	t := reflect.TypeOf(typeDetector)
+	if t.Kind() == reflect.String {
+		for k, v := range data {
+			s[k] = reflect.ValueOf(v).String()
+		}
+	} else {
+		for k, v := range data {
+			s[k] = fmt.Sprintf("%d", v)
+		}
+	}
+	return strings.Join(s, sep)
 }

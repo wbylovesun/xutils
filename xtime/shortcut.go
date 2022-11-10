@@ -1,6 +1,21 @@
 package xtime
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
+
+func Timestamp() int64 {
+	return time.Now().Unix()
+}
+
+func TimestampString() string {
+	return fmt.Sprintf("%d", Timestamp())
+}
+
+func MilliSecond() int64 {
+	return time.Now().UnixNano() / 1e6
+}
 
 func ThisYearRange(includeToday ...bool) *DateRange {
 	include := false
