@@ -1,7 +1,6 @@
 package xstrings
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -10,11 +9,12 @@ func Lcfirst(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-	c := s[0]
+	runes := []rune(s)
+	c := runes[0]
 	if c >= 'A' && c <= 'Z' {
 		first := strings.ToLower(string(c))
-		if len(s) > 1 {
-			return first + s[1:]
+		if len(runes) > 1 {
+			return first + string(runes[1:])
 		}
 		return first
 	}
@@ -26,11 +26,12 @@ func Ucfirst(s string) string {
 	if len(s) == 0 {
 		return s
 	}
+	runes := []rune(s)
 	c := s[0]
 	if c >= 'a' && c <= 'z' {
 		first := strings.ToUpper(string(c))
-		if len(s) > 1 {
-			return first + s[1:]
+		if len(runes) > 1 {
+			return first + string(runes[1:])
 		}
 		return first
 	}
@@ -67,6 +68,5 @@ func EndsWith(s, p string) bool {
 		return false
 	}
 	sp := sl - pl
-	fmt.Println(sp, sl, s[sp:sl])
 	return strings.Compare(s[sp:sl], p) == 0
 }
