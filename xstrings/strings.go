@@ -4,6 +4,32 @@ import (
 	"strings"
 )
 
+// Default 如果原值为空，返回默认值，否则使用默认值
+func Default(s, d string) string {
+	if s == "" {
+		return d
+	}
+	return s
+}
+
+// DefaultWithTrim 对原字符串先trim，之后判定是否为空。如果为空则使用默认值，否则使用trim后的原值
+func DefaultWithTrim(s, d string) string {
+	v := strings.Trim(s, "\n\t\b\r ")
+	if v == "" {
+		return d
+	}
+	return v
+}
+
+// DefaultAfterTrim 对原字符串先trim，之后判定是否为空，如果为空则使用默认值，否则使用原值
+func DefaultAfterTrim(s, d string) string {
+	v := strings.Trim(s, "\n\t\b\r ")
+	if v == "" {
+		return d
+	}
+	return s
+}
+
 // Lcfirst 如果第一个字符在A-Z之间，则将其变为小写
 func Lcfirst(s string) string {
 	if len(s) == 0 {
