@@ -145,3 +145,15 @@ func Join[T SliceElementType](data []T, sep string) string {
 	}
 	return strings.Join(s, sep)
 }
+
+func Unique[T SliceElementType](elements []T) []T {
+	f := map[T]bool{}
+	var t []T
+	for _, ele := range elements {
+		if _, ok := f[ele]; !ok {
+			f[ele] = true
+			t = append(t, ele)
+		}
+	}
+	return t
+}
