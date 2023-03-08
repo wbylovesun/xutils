@@ -105,6 +105,14 @@ func YmdDate(t time.Time) string {
 	return t.Format(YmdFormat)
 }
 
+func LongTime(t time.Time) string {
+	return t.Format(LongTimeFormat)
+}
+
+func ShortTime(t time.Time) string {
+	return t.Format(ShortTimeFormat)
+}
+
 func WithTime(t time.Time, hour, minute, second int) time.Time {
 	return time.Date(
 		t.Year(), t.Month(), t.Day(),
