@@ -1,6 +1,7 @@
 package xtime
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -28,28 +29,70 @@ func Test_timeSpan_Index(t *testing.T) {
 				timeSegs:  nil,
 			},
 			args:            args{i: 533},
-			want:            107,
+			want:            106,
 			expectInitError: false,
 		},
 		{
 			name:            "15mins span",
 			fields:          fields{span: 15},
 			args:            args{i: 533},
-			want:            36,
+			want:            35,
 			expectInitError: false,
 		},
 		{
 			name:            "30mins span",
 			fields:          fields{span: 30},
 			args:            args{i: 533},
-			want:            18,
+			want:            17,
 			expectInitError: false,
 		},
 		{
 			name:            "60mins span",
 			fields:          fields{span: 60},
 			args:            args{i: 533},
-			want:            9,
+			want:            8,
+			expectInitError: false,
+		},
+		{
+			name:            "90mins span",
+			fields:          fields{span: 90},
+			args:            args{i: 533},
+			want:            5,
+			expectInitError: false,
+		},
+		{
+			name:            "120mins span",
+			fields:          fields{span: 120},
+			args:            args{i: 533},
+			want:            4,
+			expectInitError: false,
+		},
+		{
+			name:            "180mins span",
+			fields:          fields{span: 180},
+			args:            args{i: 533},
+			want:            2,
+			expectInitError: false,
+		},
+		{
+			name:            "240mins span",
+			fields:          fields{span: 240},
+			args:            args{i: 533},
+			want:            2,
+			expectInitError: false,
+		},
+		{
+			name:            "360mins span",
+			fields:          fields{span: 360},
+			args:            args{i: 533},
+			want:            1,
+			expectInitError: false,
+		},
+		{
+			name:            "720mins span",
+			fields:          fields{span: 720},
+			args:            args{i: 533},
+			want:            0,
 			expectInitError: false,
 		},
 		{
@@ -112,6 +155,42 @@ func Test_timeSpan_Of(t *testing.T) {
 			fields: fields{span: 60},
 			args:   args{i: 533},
 			want:   "09:00",
+		},
+		{
+			name:   "90mins span",
+			fields: fields{span: 90},
+			args:   args{i: 533},
+			want:   "09:00",
+		},
+		{
+			name:   "120mins span",
+			fields: fields{span: 120},
+			args:   args{i: 533},
+			want:   "10:00",
+		},
+		{
+			name:   "180mins span",
+			fields: fields{span: 180},
+			args:   args{i: 533},
+			want:   "09:00",
+		},
+		{
+			name:   "240mins span",
+			fields: fields{span: 240},
+			args:   args{i: 533},
+			want:   "12:00",
+		},
+		{
+			name:   "480mins span",
+			fields: fields{span: 480},
+			args:   args{i: 533},
+			want:   "16:00",
+		},
+		{
+			name:   "720mins span",
+			fields: fields{span: 720},
+			args:   args{i: 533},
+			want:   "12:00",
 		},
 	}
 	for _, tt := range tests {
@@ -192,7 +271,7 @@ func Test_timeSpan_OfTime(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts, _ := NewTimeSpan(tt.fields.span)
-			got, err := ts.OfTime(tt.args.i)
+			got, err := ts.AlignToNextSeg(tt.args.i)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("OfTime() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -301,6 +380,69 @@ func Test_timeSpan_isValidHourMinute(t *testing.T) {
 			ts, _ := NewTimeSpan(tt.fields.span)
 			if got := ts.isValidHourMinute(tt.args.i); got != tt.want {
 				t.Errorf("isValidHourMinute() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_timeSpan_Fill(t *testing.T) {
+	type fields struct {
+		span int
+	}
+	type args struct {
+		m    map[PointOfTimeSlice]int
+		pots []PointOfTimeSlice
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+		want   int
+	}{
+		{
+			name: "120min",
+			fields: fields{
+				span: 120,
+			},
+			args: args{
+				m:    map[PointOfTimeSlice]int{"02:00": 10, "06:00": 20, "12:00": 30, "18:00": 60},
+				pots: []PointOfTimeSlice{"16:26"},
+			},
+			want: 10,
+		},
+		{
+			name:   "till per 60min",
+			fields: fields{span: 60},
+			args: args{
+				m:    map[PointOfTimeSlice]int{"04:00": 50, "08:00": 90, "12:00": 70, "15:00": 30},
+				pots: []PointOfTimeSlice{"16:26"},
+			},
+			want: 17,
+		},
+		{
+			name:   "till per 90min",
+			fields: fields{span: 90},
+			args: args{
+				m:    map[PointOfTimeSlice]int{"03:00": 50, "09:00": 90, "13:30": 70, "15:00": 30},
+				pots: []PointOfTimeSlice{"16:26"},
+			},
+			want: 11,
+		},
+		{
+			name:   "fullDay per 60min",
+			fields: fields{span: 60},
+			args: args{
+				m:    map[PointOfTimeSlice]int{"04:00": 50, "08:00": 90, "12:00": 70, "15:00": 30},
+				pots: []PointOfTimeSlice{"24:00"},
+			},
+			want: 24,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ts, _ := NewTimeSpan(tt.fields.span)
+			if got := ts.Fill(tt.args.m, tt.args.pots...); !reflect.DeepEqual(len(got), tt.want) {
+				t.Errorf("Fill() = %v, want %v, gotValue=%v", len(got), tt.want, got)
 			}
 		})
 	}
