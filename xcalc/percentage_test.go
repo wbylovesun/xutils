@@ -1,6 +1,7 @@
 package xcalc
 
 import (
+	"math"
 	"testing"
 )
 
@@ -198,6 +199,58 @@ func TestPercentagePrecision(t *testing.T) {
 			}
 			if got != tt.want {
 				t.Errorf("PercentagePrecision() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPercentageNoDigitWithSuppression(t *testing.T) {
+	type args struct {
+		numerator   float64
+		denominator float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want int
+	}{
+		{
+			name: "inf/0",
+			args: args{
+				numerator:   math.Inf(1),
+				denominator: 0,
+			},
+			want: 0,
+		},
+		{
+			name: "0/inf",
+			args: args{
+				numerator:   0,
+				denominator: math.Inf(1),
+			},
+			want: 0,
+		},
+		{
+			name: "nan/0",
+			args: args{
+				numerator:   math.NaN(),
+				denominator: 0,
+			},
+			want: 0,
+		},
+		{
+			name: "0/nan",
+			args: args{
+				numerator:   0,
+				denominator: math.NaN(),
+			},
+			want: 0,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PercentageNoDigitWithSuppression(tt.args.numerator, tt.args.denominator); got != tt.want {
+				t.Errorf("PercentageNoDigitWithSuppression() = %v, want %v", got, tt.want)
 			}
 		})
 	}

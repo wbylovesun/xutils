@@ -3,6 +3,7 @@ package xcalc
 import (
 	"fmt"
 	"github.com/wbylovesun/xutils/types"
+	"math"
 	"strconv"
 )
 
@@ -39,12 +40,30 @@ func PercentageWithSuppression[T types.GenericNumber](numerator, denominator T) 
 
 // PercentageNoDigitWithSuppression 不带小数，抑制错误
 func PercentageNoDigitWithSuppression[T types.GenericNumber](numerator, denominator T) int {
-	f, _ := PercentageNoDigit(numerator, denominator)
+	if math.IsNaN(float64(numerator)) || math.IsNaN(float64(denominator)) {
+		return 0
+	}
+	if math.IsInf(float64(numerator), 0) || math.IsInf(float64(denominator), 0) {
+		return 0
+	}
+	f, err := PercentageNoDigit(numerator, denominator)
+	if err != nil || math.IsNaN(float64(f)) || math.IsInf(float64(f), 0) {
+		return 0
+	}
 	return f
 }
 
 // PercentagePrecisionWithSuppression 自定义小数位长度，抑制错误
-func PercentagePrecisionWithSuppression[T types.GenericNumber](numereator, denominator T, precision int) float64 {
-	f, _ := PercentagePrecision(numereator, denominator, precision)
+func PercentagePrecisionWithSuppression[T types.GenericNumber](numerator, denominator T, precision int) float64 {
+	if math.IsNaN(float64(numerator)) || math.IsNaN(float64(denominator)) {
+		return 0
+	}
+	if math.IsInf(float64(numerator), 0) || math.IsInf(float64(denominator), 0) {
+		return 0
+	}
+	f, err := PercentagePrecision(numerator, denominator, precision)
+	if err != nil || math.IsNaN(f) || math.IsInf(f, 0) {
+		return float64(0)
+	}
 	return f
 }
