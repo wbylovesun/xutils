@@ -19,6 +19,10 @@ type timeSpan struct {
 // PointOfTimeSlice 指的是按指定时长切片后形成的时间点，如09:00, 12:15, 13:20
 type PointOfTimeSlice string
 
+type CompatiblePointOfTimeSlice interface {
+	PointOfTimeSlice | string
+}
+
 func (ts *timeSpan) init() {
 	for i := 0; i <= 1440; i += ts.span {
 		ts.timeSpans = append(ts.timeSpans, i)
@@ -195,6 +199,37 @@ func (ts *timeSpan) Fill(m map[PointOfTimeSlice]int, pots ...PointOfTimeSlice) m
 			lastVal = count
 		} else {
 			mCopy[PointOfTimeSlice(sliceTime)] = lastVal
+		}
+	}
+	return mCopy
+}
+
+func (ts *timeSpan) FillForStrKey(m map[string]int, pots ...string) map[string]int {
+	deepCopy := xutils.Copy(m)
+	mCopy := deepCopy.(map[string]int)
+	var till int
+	if len(pots) == 0 || !ts.isValidHourMinute(string(pots[0])) {
+		till, _ = ts.timeValue(time.Now().Format("15:04"))
+	} else {
+		till, _ = ts.timeValue(string(pots[0]))
+	}
+	tillHour := till / 60
+	tillMinute := till % 60
+	lastVal := 0
+	for i := 0; i <= 1440; i += ts.span {
+		hour := i / 60
+		minute := i % 60
+		if hour > tillHour {
+			break
+		}
+		if hour == tillHour && minute > tillMinute {
+			break
+		}
+		sliceTime := fmt.Sprintf("%02d:%02d", hour, minute)
+		if count, ok := mCopy[sliceTime]; ok {
+			lastVal = count
+		} else {
+			mCopy[sliceTime] = lastVal
 		}
 	}
 	return mCopy
