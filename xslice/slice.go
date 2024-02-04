@@ -1,12 +1,10 @@
 package xslice
 
 import (
-	"fmt"
-	"reflect"
 	"sort"
-	"strings"
 )
 
+// RmDuplicate Deprecated 移除重复项
 func RmDuplicate[T SliceElementType](data []T) []T {
 	var nData []T
 	var nMap = map[T]bool{}
@@ -71,8 +69,8 @@ func Contains[T SliceElementType](data []T, ct T) bool {
 }
 
 func ContainsSlice[T SliceElementType](data []T, ct []T) bool {
-	nData := RmDuplicate(data)
-	nCt := RmDuplicate(ct)
+	nData := Unique(data)
+	nCt := Unique(ct)
 	Sort(nData)
 	Sort(nCt)
 
@@ -130,22 +128,6 @@ func Max[T SliceElementType](data []T) *T {
 	return &max
 }
 
-func Join[T SliceElementType](data []T, sep string) string {
-	s := make([]string, len(data))
-	var typeDetector T
-	t := reflect.TypeOf(typeDetector)
-	if t.Kind() == reflect.String {
-		for k, v := range data {
-			s[k] = reflect.ValueOf(v).String()
-		}
-	} else {
-		for k, v := range data {
-			s[k] = fmt.Sprintf("%d", v)
-		}
-	}
-	return strings.Join(s, sep)
-}
-
 func Unique[T SliceElementType](elements []T) []T {
 	f := map[T]bool{}
 	var t []T
@@ -156,4 +138,14 @@ func Unique[T SliceElementType](elements []T) []T {
 		}
 	}
 	return t
+}
+
+func Diff[T SliceElementType](A, B []T) []T {
+	var diffed []T
+	for _, i := range A {
+		if !Contains(B, i) {
+			diffed = append(diffed, i)
+		}
+	}
+	return diffed
 }
