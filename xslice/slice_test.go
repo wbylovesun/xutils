@@ -339,3 +339,61 @@ func TestMap(t *testing.T) {
 		})
 	}
 }
+
+//func TestJoin(t *testing.T) {
+//	type args[T SliceElementType] struct {
+//		data []T
+//		sep  string
+//	}
+//	type testCase[T SliceElementType] struct {
+//		name string
+//		args args[T]
+//		want string
+//	}
+//	tests := []testCase[int8]{
+//		{
+//			name: "int",
+//			args: args[int8]{
+//				data: []int8{1, 2, -1, 0},
+//				sep:  ",",
+//			},
+//			want: "1,2,-1,0",
+//		},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			if got := Join(tt.args.data, tt.args.sep); got != tt.want {
+//				t.Errorf("Join() = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}
+
+func TestDiff(t *testing.T) {
+	type args[T SliceElementType] struct {
+		A []T
+		B []T
+	}
+	type testCase[T SliceElementType] struct {
+		name string
+		args args[T]
+		want []T
+	}
+	tests := []testCase[int]{
+		{
+			name: "Int",
+			args: args[int]{
+				A: []int{1, 3, 4, 2, 8, 7},
+				B: []int{3, 2},
+			},
+			want: []int{1, 4, 8, 7},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := Diff(tt.args.A, tt.args.B); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Diff() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
