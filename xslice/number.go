@@ -6,6 +6,8 @@ import (
 	"strings"
 )
 
+// Join 将一个slice使用sep连接成一个字符串
+// slice的元素当为float类型时，当小数为0时会被舍弃；小数不为0时，保留17-整数位长度的小数
 func Join[T NumberSliceElementType | UnsignedNumberSliceElementType | float32 | float64](t []T, sep string) string {
 	if len(t) == 0 {
 		return ""
@@ -28,7 +30,7 @@ func Join[T NumberSliceElementType | UnsignedNumberSliceElementType | float32 | 
 				s.WriteString(sep)
 			}
 		}
-	case reflect.Float32 | reflect.Float64:
+	case reflect.Float32, reflect.Float64:
 		for i, v := range t {
 			s.WriteString(strconv.FormatFloat(float64(v), 'f', -1, 64))
 			if i != l-1 {
@@ -42,56 +44,32 @@ func Join[T NumberSliceElementType | UnsignedNumberSliceElementType | float32 | 
 }
 
 func ToInt64Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int64 {
-	if len(t) == 0 {
-		return nil
-	}
-	var i64 = make([]int64, len(t))
-	for i, v := range t {
-		i64[i] = int64(v)
-	}
-	return i64
+	return ToNumberSlice(t, int64(0))
 }
 
 func ToInt32Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int32 {
-	if len(t) == 0 {
-		return nil
-	}
-	var i32 = make([]int32, len(t))
-	for i, v := range t {
-		i32[i] = int32(v)
-	}
-	return i32
+	return ToNumberSlice(t, int32(0))
 }
 
 func ToInt16Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int16 {
-	if len(t) == 0 {
-		return nil
-	}
-	var i16 = make([]int16, len(t))
-	for i, v := range t {
-		i16[i] = int16(v)
-	}
-	return i16
+	return ToNumberSlice(t, int16(0))
 }
 
 func ToInt8Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int8 {
-	if len(t) == 0 {
-		return nil
-	}
-	var i8 = make([]int8, len(t))
-	for i, v := range t {
-		i8[i] = int8(v)
-	}
-	return i8
+	return ToNumberSlice(t, int8(0))
 }
 
 func ToIntSlice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int {
+	return ToNumberSlice(t, int(0))
+}
+
+func ToNumberSlice[T NumberSliceElementType | UnsignedNumberSliceElementType, U NumberSliceElementType](t []T, u U) []U {
 	if len(t) == 0 {
 		return nil
 	}
-	var is = make([]int, len(t))
+	var us = make([]U, len(t))
 	for i, v := range t {
-		is[i] = int(v)
+		us[i] = U(v)
 	}
-	return is
+	return us
 }

@@ -4,24 +4,22 @@ import (
 	"sort"
 )
 
-// RmDuplicate Deprecated 移除重复项
-func RmDuplicate[T SliceElementType](data []T) []T {
-	var nData []T
-	var nMap = map[T]bool{}
-	for _, v := range data {
-		if _, ok := nMap[v]; !ok {
-			nData = append(nData, v)
-			nMap[v] = true
-		}
-	}
-	return nData
+func Clone[T SliceElementType](data []T) []T {
+	t := make([]T, len(data))
+	copy(t, data)
+	return t
 }
 
-func Sort[T SliceElementType](data []T) []T {
+func Sort[T SliceElementType](data []T) {
 	sort.Slice(data, func(i, j int) bool {
 		return data[i] < data[j]
 	})
-	return data
+}
+
+func CloneSort[T SliceElementType](data []T) []T {
+	t := Clone(data)
+	Sort(t)
+	return t
 }
 
 func BisectionSearch[T SliceElementType](list []T, target T) int {
@@ -140,7 +138,38 @@ func Unique[T SliceElementType](elements []T) []T {
 	return t
 }
 
+func Distinct[T SliceElementType](elements []T) []T {
+	return Unique(elements)
+}
+
+func Intersection[T SliceElementType](A, B []T) []T {
+	a := A
+	b := B
+	if len(a) > len(b) {
+		a, b = b, a
+	}
+	var inter []T
+	for _, i := range a {
+		if Contains(b, i) {
+			inter = append(inter, i)
+		}
+	}
+	return inter
+}
+
+func CloneDiff[T SliceElementType](A, B []T) []T {
+	a := CloneSort(A)
+	b := CloneSort(B)
+	return diff(a, b)
+}
+
 func Diff[T SliceElementType](A, B []T) []T {
+	Sort(A)
+	Sort(B)
+	return diff(A, B)
+}
+
+func diff[T SliceElementType](A, B []T) []T {
 	var diffed []T
 	for _, i := range A {
 		if !Contains(B, i) {
@@ -148,4 +177,8 @@ func Diff[T SliceElementType](A, B []T) []T {
 		}
 	}
 	return diffed
+}
+
+func Union[T SliceElementType](A, B []T) []T {
+	return Unique(append(A, B...))
 }
