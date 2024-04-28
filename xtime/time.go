@@ -79,11 +79,6 @@ func NewComparableMonthRangeByTime(start, end time.Time) *ComparableMonthRange {
 	}}
 }
 
-func ISOYearWeek(t time.Time) int {
-	year, week := t.ISOWeek()
-	return year*100 + week
-}
-
 func YearMonth(t time.Time) int {
 	toMonth, _ := strconv.Atoi(t.Format(YearMonthFormat))
 	return toMonth
@@ -150,6 +145,10 @@ func AddDays(t time.Time, days int) time.Time {
 	return t2.Add(duration)
 }
 
+func SubtractDays(t time.Time, days int) time.Time {
+	return AddDays(t, -days)
+}
+
 func IsLeap(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }
@@ -167,6 +166,46 @@ func DaysInYearMonth(y, m int) int {
 
 func LastSecondOf(t time.Time) time.Time {
 	return WithTime(t, 23, 59, 59)
+}
+
+func DateIntVal(t time.Time) int {
+	return t.Year()*10000 + int(t.Month())*100 + t.Day()
+}
+
+// DayOfYear 年积日，获取一年中的第几天，从1开始
+func DayOfYear(t time.Time) int {
+	nt := time.Date(t.Year(), 1, 0, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
+	gap := int(t.Sub(nt).Hours())
+	gap /= 24
+	return gap
+}
+
+// TimeOfDayOfYear 设置一年中的第几天，从1开始
+// 接受从 1 到 366 的数字。如果超出范围，它将冒泡到年份。
+func TimeOfDayOfYear(t time.Time, d int) time.Time {
+	nt := time.Date(t.Year(), time.Month(1), 0, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
+	nt = nt.AddDate(0, 0, d)
+	return nt
+}
+
+// WeeksInYear 获取一年中的周数
+// 参考：moment.js
+func WeeksInYear(year int) int {
+	dayOfWeek := 0
+	dayOfYear := 6
+	daysInYear := 365
+	if IsLeap(year) {
+		daysInYear = 366
+	}
+	weekOffset := firstWeekOffset(year, int(dayOfWeek), dayOfYear)
+	weekOffsetNext := firstWeekOffset(year+1, int(dayOfWeek), dayOfYear)
+	return (daysInYear - weekOffset + weekOffsetNext) / 7
+}
+
+func firstWeekOffset(year, dow, doy int) int {
+	fwd := 7 + dow - doy
+	fwdlw := (7 + int(time.Date(year, 1, fwd, 0, 0, 0, 0, time.UTC).Weekday()) - dow) % 7
+	return -fwdlw + fwd - 1
 }
 
 func parseDate(date, format string) (time.Time, error) {
@@ -244,6 +283,11 @@ func MustOf(ts string) time.Time {
 		return time.Time{}
 	}
 	return t
+}
+
+// MustOfDateIntVal 将Ymd格式的日期数值转换为time.Time
+func MustOfDateIntVal(ts int) time.Time {
+	return MustOf(strconv.Itoa(ts))
 }
 
 func Parse(ts string) (time.Time, error) {

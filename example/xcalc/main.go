@@ -13,7 +13,17 @@ type item struct {
 }
 
 func main() {
-	sequence()
+	//sequence()
+	fmt.Println(xcalc.Percentage(25645, 100000))
+	fmt.Println(xcalc.Percentage(256438, 1000000))
+	fmt.Println(xcalc.Percentage(256448, 1000000))
+	fmt.Println(xcalc.Percentage(256352, 1000000))
+	fmt.Println(xcalc.Percentage(256552, 1000000))
+	fmt.Println(xcalc.PercentagePrecision(256552, 1000000, 4))
+	fmt.Println(xcalc.PercentagePrecision(2565523840, 10000000000, 6))
+	fmt.Println(xcalc.PercentageWithTwoDigits(2565523840, 10000000000))
+	fmt.Println(xcalc.PercentageWithTwoDigits(2564523840, 10000000000))
+	fmt.Println(xcalc.PercentageWithTwoDigits(2564423840, 10000000000))
 }
 
 func sequence() {

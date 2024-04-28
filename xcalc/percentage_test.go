@@ -1,6 +1,7 @@
 package xcalc
 
 import (
+	"github.com/wbylovesun/xutils/types"
 	"math"
 	"testing"
 )
@@ -251,6 +252,244 @@ func TestPercentageNoDigitWithSuppression(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := PercentageNoDigitWithSuppression(tt.args.numerator, tt.args.denominator); got != tt.want {
 				t.Errorf("PercentageNoDigitWithSuppression() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPromisePercentWithTwoDigits(t *testing.T) {
+	type args struct {
+		n float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+		{
+			name: "25.6534",
+			args: args{
+				n: 25.6534,
+			},
+			want: 25.65,
+		},
+		{
+			name: "25.656",
+			args: args{
+				n: 25.656,
+			},
+			want: 25.66,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PromisePercentWithTwoDigits(tt.args.n); got != tt.want {
+				t.Errorf("PromisePercentWithTwoDigits() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPromiseWithTwoDigits(t *testing.T) {
+	type args struct {
+		n float64
+	}
+	tests := []struct {
+		name string
+		args args
+		want float64
+	}{
+
+		{
+			name: "0.256534",
+			args: args{
+				n: 0.256534,
+			},
+			want: 25.65,
+		},
+		{
+			name: "0.25656",
+			args: args{
+				n: 0.25656,
+			},
+			want: 25.66,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PromiseWithTwoDigits(tt.args.n); got != tt.want {
+				t.Errorf("PromiseWithTwoDigits() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPercentageWithTwoDigits(t *testing.T) {
+	type args[T types.GenericNumber] struct {
+		numerator   T
+		denominator T
+	}
+	type testCase[T types.GenericNumber] struct {
+		name string
+		args args[T]
+		want float64
+	}
+	tests := []testCase[int]{
+		{
+			name: "25643/100000",
+			args: args[int]{
+				numerator:   25643,
+				denominator: 100000,
+			},
+			want: 25.64,
+		},
+		{
+			name: "25645/100000",
+			args: args[int]{
+				numerator:   25645,
+				denominator: 100000,
+			},
+			want: 25.65,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PercentageWithTwoDigits(tt.args.numerator, tt.args.denominator); got != tt.want {
+				t.Errorf("PercentageWithTwoDigits() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestNumberPrecision(t *testing.T) {
+	type args[T types.GenericNumber] struct {
+		numerator   T
+		denominator T
+		precision   int
+	}
+	type testCase[T types.GenericNumber] struct {
+		name string
+		args args[T]
+		want float64
+	}
+	tests := []testCase[int]{
+		{
+			name: "25643/100000",
+			args: args[int]{
+				numerator:   25643,
+				denominator: 100000,
+				precision:   4,
+			},
+			want: 0.2564,
+		},
+		{
+			name: "25643/100000",
+			args: args[int]{
+				numerator:   25643,
+				denominator: 100000,
+				precision:   5,
+			},
+			want: 0.25643,
+		},
+		{
+			name: "25643/100000",
+			args: args[int]{
+				numerator:   25643,
+				denominator: 100000,
+				precision:   3,
+			},
+			want: 0.256,
+		},
+		{
+			name: "25643/100000",
+			args: args[int]{
+				numerator:   25643,
+				denominator: 100000,
+				precision:   2,
+			},
+			want: 0.26,
+		},
+		{
+			name: "25645/100000",
+			args: args[int]{
+				numerator:   25645,
+				denominator: 100000,
+				precision:   4,
+			},
+			want: 0.2565,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := NumberPrecision(tt.args.numerator, tt.args.denominator, tt.args.precision); got != tt.want {
+				t.Errorf("NumberPrecision() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPercentagePrecisionWithSuppression(t *testing.T) {
+	type args[T types.GenericNumber] struct {
+		numerator   T
+		denominator T
+		precision   int
+	}
+	type testCase[T types.GenericNumber] struct {
+		name string
+		args args[T]
+		want float64
+	}
+	tests := []testCase[int]{
+		{
+			name: "25643/100000",
+			args: args[int]{
+				numerator:   25643,
+				denominator: 100000,
+				precision:   2,
+			},
+			want: 25.64,
+		},
+		{
+			name: "25645/100000",
+			args: args[int]{
+				numerator:   25645,
+				denominator: 100000,
+				precision:   2,
+			},
+			want: 25.65,
+		},
+		{
+			name: "25645/100000",
+			args: args[int]{
+				numerator:   25645,
+				denominator: 100000,
+				precision:   3,
+			},
+			want: 25.645,
+		},
+		{
+			name: "25645/100000",
+			args: args[int]{
+				numerator:   25645,
+				denominator: 100000,
+				precision:   1,
+			},
+			want: 25.6,
+		},
+		{
+			name: "25646/100000",
+			args: args[int]{
+				numerator:   25646,
+				denominator: 100000,
+				precision:   2,
+			},
+			want: 25.65,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := PercentagePrecisionWithSuppression(tt.args.numerator, tt.args.denominator, tt.args.precision); got != tt.want {
+				t.Errorf("PercentagePrecisionWithSuppression() = %v, want %v", got, tt.want)
 			}
 		})
 	}

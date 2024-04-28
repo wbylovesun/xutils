@@ -16,4 +16,6 @@ func main() {
 	fmt.Println(xrand.UpperChars(20))
 	fmt.Println(xrand.LowerCharNumbers(20))
 	fmt.Println(xrand.UpperCharNumbers(20))
+
+	fmt.Println(xrand.ULID())
 }
