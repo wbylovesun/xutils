@@ -82,12 +82,7 @@ func TimeOfISOWeekday(t time.Time, weekday int) time.Time {
 	if weekday == day {
 		return t
 	}
-	gap := day - weekday
-	if gap < 0 {
-		gap += 8
-	} else {
-		gap = -1 * gap
-	}
+	gap := -1 * (day - weekday)
 	return t.AddDate(0, 0, gap)
 }
 

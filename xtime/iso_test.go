@@ -25,6 +25,22 @@ func TestISOWeekdayTime(t *testing.T) {
 			want: time.Date(2024, 4, 28, 15, 30, 0, 0, time.Local),
 		},
 		{
+			name: "2024-04-24,6",
+			args: args{
+				t:       time.Date(2024, 4, 24, 15, 30, 0, 0, time.Local),
+				weekday: 6,
+			},
+			want: time.Date(2024, 4, 27, 15, 30, 0, 0, time.Local),
+		},
+		{
+			name: "2024-04-24,5",
+			args: args{
+				t:       time.Date(2024, 4, 24, 15, 30, 0, 0, time.Local),
+				weekday: 5,
+			},
+			want: time.Date(2024, 4, 26, 15, 30, 0, 0, time.Local),
+		},
+		{
 			name: "2024-04-24,4",
 			args: args{
 				t:       time.Date(2024, 4, 24, 15, 30, 0, 0, time.Local),
