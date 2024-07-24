@@ -1,7 +1,6 @@
 package xtime
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -15,7 +14,6 @@ func LastWeekSameDay(t time.Time) time.Time {
 func WeekDateRange(t time.Time) DateRange {
 	s := WithTime(AddDays(t, -1*int(t.Weekday())), 0, 0, 0)
 	e := WithTime(AddDays(s, 6), 0, 0, 0)
-	fmt.Println(s, e)
 	return DateRange{
 		from: s,
 		to:   e,

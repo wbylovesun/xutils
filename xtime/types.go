@@ -11,6 +11,15 @@ type ComparableDateRange struct {
 	DateRange
 }
 
+type WeekRange struct {
+	from time.Time
+	to   time.Time
+}
+
+type ComparableWeekRange struct {
+	WeekRange
+}
+
 type MonthRange struct {
 	from time.Time
 	to   time.Time

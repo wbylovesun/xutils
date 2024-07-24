@@ -37,4 +37,10 @@ func main() {
 	t, _ := xtime.Parse("2023-03-08 16:26")
 	fmt.Println(ts2.TimeOfNextAlignSeg(t))
 	fmt.Println(ts2.TimeOfPrevAlignSeg(t))
+
+	w := xtime.ISOThisWeekRange()
+	fmt.Println(w.FromAsShortDate(), w.ToAsShortDate())
+	c := xtime.NewComparableWeekRange(w)
+	nw := c.LastWeekRange()
+	fmt.Println(nw.FromAsShortDate(), nw.ToAsShortDate())
 }

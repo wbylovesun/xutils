@@ -494,3 +494,74 @@ func TestPercentagePrecisionWithSuppression(t *testing.T) {
 		})
 	}
 }
+
+func TestPercentageRatio(t *testing.T) {
+	type args struct {
+		now float64
+		pre float64
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    float64
+		wantErr bool
+	}{
+		{
+			name: "181,162",
+			args: args{
+				now: 181,
+				pre: 162,
+			},
+			want:    11.73,
+			wantErr: false,
+		},
+		{
+			name: "162,181",
+			args: args{
+				now: 162,
+				pre: 181,
+			},
+			want:    -10.5,
+			wantErr: false,
+		},
+		{
+			name: "0,181",
+			args: args{
+				now: 0,
+				pre: 181,
+			},
+			want:    -100,
+			wantErr: false,
+		},
+		{
+			name: "162,0",
+			args: args{
+				now: 162,
+				pre: 0,
+			},
+			want:    math.Inf(0),
+			wantErr: false,
+		},
+		{
+			name: "0,0",
+			args: args{
+				now: 0,
+				pre: 0,
+			},
+			want:    0,
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := PercentageRatio(tt.args.now, tt.args.pre)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("PercentageRatio() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("PercentageRatio() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

@@ -121,3 +121,20 @@ func Round(val float64, precision int) float64 {
 	p := math.Pow10(precision)
 	return math.Floor(val*p+0.5) / p
 }
+
+func Ratio(now, pre float64, precision int) (float64, error) {
+	if now == 0 && pre == 0 {
+		return 0, nil
+	}
+	if now == 0 {
+		return -100, nil
+	}
+	if pre == 0 {
+		return math.Inf(0), nil
+	}
+	return Round((now/pre-1)*100, precision), nil
+}
+
+func PercentageRatio(now, pre float64) (float64, error) {
+	return Ratio(now, pre, 2)
+}

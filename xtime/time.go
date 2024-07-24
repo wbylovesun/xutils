@@ -62,6 +62,10 @@ func NewComparableDateRangeByString(start, end, format string) (*ComparableDateR
 	return NewComparableDateRange(*dr), nil
 }
 
+func NewComparableWeekRange(wr WeekRange) *ComparableWeekRange {
+	return &ComparableWeekRange{WeekRange: wr}
+}
+
 func NewMonthRange(start, end time.Time) *MonthRange {
 	if start.After(end) {
 		start, end = end, start
