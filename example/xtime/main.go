@@ -42,5 +42,17 @@ func main() {
 	fmt.Println(w.FromAsShortDate(), w.ToAsShortDate())
 	c := xtime.NewComparableWeekRange(w)
 	nw := c.LastWeekRange()
-	fmt.Println(nw.FromAsShortDate(), nw.ToAsShortDate())
+	fmt.Println("nw=", nw.FromAsShortDate(), nw.ToAsShortDate())
+	nw2 := c.SameDurationLastWeekRange()
+	fmt.Println("nw2=", nw2.FromAsShortDate(), nw2.ToAsShortDate())
+	nw3 := c.NWeeksAgoWeekRange(2)
+	fmt.Println("nw3=", nw3.FromAsShortDate(), nw3.ToAsShortDate())
+	nws1 := c.LastNWeeksWeekRange(2)
+	for _, nw4 := range nws1 {
+		fmt.Println("nw4=", nw4.FromAsShortDate(), nw4.ToAsShortDate())
+	}
+	nws2 := c.SameDurationLastNWeeksWeekRange(2)
+	for _, nw5 := range nws2 {
+		fmt.Println("nw5=", nw5.FromAsShortDate(), nw5.ToAsShortDate())
+	}
 }
