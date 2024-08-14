@@ -176,6 +176,11 @@ func DateIntVal(t time.Time) int {
 	return t.Year()*10000 + int(t.Month())*100 + t.Day()
 }
 
+func ParseDateIntVal(d int) (time.Time, error) {
+	ds := strconv.Itoa(d)
+	return Parse(ds)
+}
+
 // DayOfYear 年积日，获取一年中的第几天，从1开始
 func DayOfYear(t time.Time) int {
 	nt := time.Date(t.Year(), 1, 0, t.Hour(), t.Minute(), t.Second(), t.Nanosecond(), t.Location())
