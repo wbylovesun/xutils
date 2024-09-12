@@ -36,23 +36,22 @@ func isGte(fl validator.FieldLevel) bool {
 
 		return field.Uint() >= p
 
-	case reflect.Float32, reflect.Float64:
-		p := asFloat(param)
+	case reflect.Float32:
+		p := asFloat32(param)
+
+		return field.Float() >= p
+
+	case reflect.Float64:
+		p := asFloat64(param)
 
 		return field.Float() >= p
 
 	case reflect.Struct:
-
-		if field.Type() == timeType {
+		if field.Type().ConvertibleTo(timeType) {
 			now := time.Now().UTC()
+			t := field.Convert(timeType).Interface().(time.Time)
 			var expected time.Time
 			switch param {
-			//case "today":
-			//	expected = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.Local)
-			//case "yesterday":
-			//	expected = now.AddDate(0, 0, -1)
-			//case "tomorrow":
-			//	expected = now.AddDate(0, 0, 1)
 			case "":
 				expected = now
 			default:
@@ -63,9 +62,6 @@ func isGte(fl validator.FieldLevel) bool {
 					expected = *d
 				}
 			}
-
-			t := field.Interface().(time.Time)
-
 			return t.After(expected) || t.Equal(expected)
 		}
 	}
@@ -101,13 +97,20 @@ func isGt(fl validator.FieldLevel) bool {
 
 		return field.Uint() > p
 
-	case reflect.Float32, reflect.Float64:
-		p := asFloat(param)
+	case reflect.Float32:
+		p := asFloat32(param)
 
 		return field.Float() > p
+
+	case reflect.Float64:
+		p := asFloat64(param)
+
+		return field.Float() > p
+
 	case reflect.Struct:
-		if field.Type() == timeType {
+		if field.Type().ConvertibleTo(timeType) {
 			now := time.Now().UTC()
+			t := field.Convert(timeType).Interface().(time.Time)
 			var expected time.Time
 			switch param {
 			case "":
@@ -120,9 +123,6 @@ func isGt(fl validator.FieldLevel) bool {
 					expected = *d
 				}
 			}
-
-			t := field.Interface().(time.Time)
-
 			return t.After(expected)
 		}
 	}
@@ -158,16 +158,20 @@ func isLte(fl validator.FieldLevel) bool {
 
 		return field.Uint() <= p
 
-	case reflect.Float32, reflect.Float64:
-		p := asFloat(param)
+	case reflect.Float32:
+		p := asFloat32(param)
+
+		return field.Float() <= p
+
+	case reflect.Float64:
+		p := asFloat64(param)
 
 		return field.Float() <= p
 
 	case reflect.Struct:
-
-		if field.Type() == timeType {
-
+		if field.Type().ConvertibleTo(timeType) {
 			now := time.Now().UTC()
+			t := field.Convert(timeType).Interface().(time.Time)
 			var expected time.Time
 			switch param {
 			case "":
@@ -180,8 +184,6 @@ func isLte(fl validator.FieldLevel) bool {
 					expected = *d
 				}
 			}
-
-			t := field.Interface().(time.Time)
 
 			return t.Before(expected) || t.Equal(expected)
 		}
@@ -218,15 +220,20 @@ func isLt(fl validator.FieldLevel) bool {
 
 		return field.Uint() < p
 
-	case reflect.Float32, reflect.Float64:
-		p := asFloat(param)
+	case reflect.Float32:
+		p := asFloat32(param)
+
+		return field.Float() < p
+
+	case reflect.Float64:
+		p := asFloat64(param)
 
 		return field.Float() < p
 
 	case reflect.Struct:
-
-		if field.Type() == timeType {
+		if field.Type().ConvertibleTo(timeType) {
 			now := time.Now().UTC()
+			t := field.Convert(timeType).Interface().(time.Time)
 			var expected time.Time
 			switch param {
 			case "":
@@ -239,8 +246,6 @@ func isLt(fl validator.FieldLevel) bool {
 					expected = *d
 				}
 			}
-
-			t := field.Interface().(time.Time)
 			return t.Before(expected)
 		}
 	}
