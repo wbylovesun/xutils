@@ -17,7 +17,7 @@ func (j *JsonLongDate) MarshalJSON() ([]byte, error) {
 
 func (j *JsonLongDate) UnmarshalJSON(data []byte) error {
 	t, err := time.ParseInLocation(`"`+LongFormat+`"`, string(data), time.Local)
-	*j = JsonLongDate{t}
+	*j = JsonLongDate(t)
 	return err
 }
 
@@ -26,7 +26,13 @@ func (j *JsonLongDate) String(format ...string) string {
 	if len(format) > 0 {
 		layout = format[0]
 	}
-	return j.Format(layout)
+	v := time.Time(*j)
+	return v.Format(layout)
+}
+
+func (j *JsonLongDate) Time() time.Time {
+	v := time.Time(*j)
+	return v
 }
 
 func (j *JsonShortDate) MarshalJSON() ([]byte, error) {
@@ -39,7 +45,7 @@ func (j *JsonShortDate) MarshalJSON() ([]byte, error) {
 
 func (j *JsonShortDate) UnmarshalJSON(data []byte) error {
 	t, err := time.ParseInLocation(`"`+ShortFormat+`"`, string(data), time.Local)
-	*j = JsonShortDate{t}
+	*j = JsonShortDate(t)
 	return err
 }
 
@@ -48,12 +54,19 @@ func (j *JsonShortDate) String(format ...string) string {
 	if len(format) > 0 {
 		layout = format[0]
 	}
-	return j.Format(layout)
+	v := time.Time(*j)
+	return v.Format(layout)
+}
+
+func (j *JsonShortDate) Time() time.Time {
+	v := time.Time(*j)
+	return v
 }
 
 func (j *JsonTimestamp) MarshalJSON() ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
-	binary.Write(buf, binary.LittleEndian, j.Unix())
+	v := time.Time(*j)
+	binary.Write(buf, binary.LittleEndian, v.Unix())
 	return buf.Bytes(), nil
 }
 
@@ -63,7 +76,7 @@ func (j *JsonTimestamp) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t := time.Unix(int64(atoi), 0)
-	*j = JsonTimestamp{t}
+	*j = JsonTimestamp(t)
 	return nil
 }
 
@@ -72,5 +85,11 @@ func (j *JsonTimestamp) String(format ...string) string {
 	if len(format) > 0 {
 		layout = format[0]
 	}
-	return j.Format(layout)
+	v := time.Time(*j)
+	return v.Format(layout)
+}
+
+func (j *JsonTimestamp) Time() time.Time {
+	v := time.Time(*j)
+	return v
 }

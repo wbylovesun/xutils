@@ -29,14 +29,8 @@ type ComparableMonthRange struct {
 	MonthRange
 }
 
-type JsonShortDate struct {
-	time.Time
-}
+type JsonShortDate time.Time
 
-type JsonLongDate struct {
-	time.Time
-}
+type JsonLongDate time.Time
 
-type JsonTimestamp struct {
-	time.Time
-}
+type JsonTimestamp time.Time
