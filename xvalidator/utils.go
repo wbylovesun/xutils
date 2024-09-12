@@ -92,9 +92,8 @@ func isEmbedded(struct1Type reflect.Type, struct2Type reflect.Type) bool {
 }
 
 // getEmbeddedStruct 查找并返回内嵌的结构体（如果存在）
-func getEmbeddedStruct(b interface{}, embeddedType reflect.Type) (interface{}, bool) {
-	bValue := reflect.ValueOf(b)
-	bType := reflect.TypeOf(b)
+func getEmbeddedStruct(bValue reflect.Value, embeddedType reflect.Type) (interface{}, bool) {
+	bType := bValue.Type()
 
 	// 遍历 B 的所有字段
 	for i := 0; i < bType.NumField(); i++ {
