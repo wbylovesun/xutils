@@ -20,15 +20,15 @@ func Test_isEmbedded(t *testing.T) {
 		{
 			name: "test1",
 			args: args{
-				struct2: xtime.JsonShortDate{Time: time.Now()},
 				struct1: time.Time{},
+				struct2: xtime.JsonShortDate{Time: time.Now()},
 			},
 			want: true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isEmbedded(tt.args.struct1, tt.args.struct2); got != tt.want {
+			if got := isEmbedded(reflect.TypeOf(tt.args.struct1), reflect.TypeOf(tt.args.struct2)); got != tt.want {
 				t.Errorf("isEmbedded() = %v, want %v", got, tt.want)
 			}
 		})

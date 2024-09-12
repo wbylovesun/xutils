@@ -79,10 +79,7 @@ func panicIf(err error) {
 	}
 }
 
-func isEmbedded(struct1 interface{}, struct2 interface{}) bool {
-	struct1Type := reflect.TypeOf(struct1)
-	struct2Type := reflect.TypeOf(struct2)
-
+func isEmbedded(struct1Type reflect.Type, struct2Type reflect.Type) bool {
 	// 遍历 struct2 的所有字段，检查是否有内嵌字段与 struct1 类型匹配
 	for i := 0; i < struct2Type.NumField(); i++ {
 		field := struct2Type.Field(i)

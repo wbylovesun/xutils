@@ -51,7 +51,7 @@ func isGte(fl validator.FieldLevel) bool {
 			expected := parseParamToExpectedTime(param)
 			t := field.Convert(timeType).Interface().(time.Time)
 			return t.After(expected) || t.Equal(expected)
-		} else if isEmbedded(time.Time{}, field) {
+		} else if isEmbedded(timeType, field.Type()) {
 			expected := parseParamToExpectedTime(param)
 			et, ok := getEmbeddedStruct(field, timeType)
 			if ok {
@@ -107,7 +107,7 @@ func isGt(fl validator.FieldLevel) bool {
 			expected := parseParamToExpectedTime(param)
 			t := field.Convert(timeType).Interface().(time.Time)
 			return t.After(expected)
-		} else if isEmbedded(time.Time{}, field) {
+		} else if isEmbedded(timeType, field.Type()) {
 			expected := parseParamToExpectedTime(param)
 			et, ok := getEmbeddedStruct(field, timeType)
 			if ok {
@@ -163,7 +163,7 @@ func isLte(fl validator.FieldLevel) bool {
 			expected := parseParamToExpectedTime(param)
 			t := field.Convert(timeType).Interface().(time.Time)
 			return t.Before(expected) || t.Equal(expected)
-		} else if isEmbedded(time.Time{}, field) {
+		} else if isEmbedded(timeType, field.Type()) {
 			expected := parseParamToExpectedTime(param)
 			et, ok := getEmbeddedStruct(field, timeType)
 			if ok {
@@ -219,7 +219,7 @@ func isLt(fl validator.FieldLevel) bool {
 			t := field.Convert(timeType).Interface().(time.Time)
 			expected := parseParamToExpectedTime(param)
 			return t.Before(expected)
-		} else if isEmbedded(time.Time{}, field) {
+		} else if isEmbedded(timeType, field.Type()) {
 			expected := parseParamToExpectedTime(param)
 			et, ok := getEmbeddedStruct(field, timeType)
 			if ok {
