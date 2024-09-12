@@ -48,21 +48,16 @@ func isGte(fl validator.FieldLevel) bool {
 
 	case reflect.Struct:
 		if field.Type().ConvertibleTo(timeType) {
-			now := time.Now().UTC()
+			expected := parseParamToExpectedTime(param)
 			t := field.Convert(timeType).Interface().(time.Time)
-			var expected time.Time
-			switch param {
-			case "":
-				expected = now
-			default:
-				d, err := tryParseDate(param)
-				if err != nil {
-					expected = now
-				} else {
-					expected = *d
-				}
-			}
 			return t.After(expected) || t.Equal(expected)
+		} else if isEmbedded(time.Time{}, field) {
+			expected := parseParamToExpectedTime(param)
+			et, ok := getEmbeddedStruct(field, timeType)
+			if ok {
+				t := et.(time.Time)
+				return t.After(expected) || t.Equal(expected)
+			}
 		}
 	}
 
@@ -109,21 +104,16 @@ func isGt(fl validator.FieldLevel) bool {
 
 	case reflect.Struct:
 		if field.Type().ConvertibleTo(timeType) {
-			now := time.Now().UTC()
+			expected := parseParamToExpectedTime(param)
 			t := field.Convert(timeType).Interface().(time.Time)
-			var expected time.Time
-			switch param {
-			case "":
-				expected = now
-			default:
-				d, err := tryParseDate(param)
-				if err != nil {
-					expected = now
-				} else {
-					expected = *d
-				}
-			}
 			return t.After(expected)
+		} else if isEmbedded(time.Time{}, field) {
+			expected := parseParamToExpectedTime(param)
+			et, ok := getEmbeddedStruct(field, timeType)
+			if ok {
+				t := et.(time.Time)
+				return t.After(expected)
+			}
 		}
 	}
 
@@ -170,22 +160,16 @@ func isLte(fl validator.FieldLevel) bool {
 
 	case reflect.Struct:
 		if field.Type().ConvertibleTo(timeType) {
-			now := time.Now().UTC()
+			expected := parseParamToExpectedTime(param)
 			t := field.Convert(timeType).Interface().(time.Time)
-			var expected time.Time
-			switch param {
-			case "":
-				expected = now
-			default:
-				d, err := tryParseDate(param)
-				if err != nil {
-					expected = now
-				} else {
-					expected = *d
-				}
-			}
-
 			return t.Before(expected) || t.Equal(expected)
+		} else if isEmbedded(time.Time{}, field) {
+			expected := parseParamToExpectedTime(param)
+			et, ok := getEmbeddedStruct(field, timeType)
+			if ok {
+				t := et.(time.Time)
+				return t.Before(expected) || t.Equal(expected)
+			}
 		}
 	}
 
@@ -232,21 +216,16 @@ func isLt(fl validator.FieldLevel) bool {
 
 	case reflect.Struct:
 		if field.Type().ConvertibleTo(timeType) {
-			now := time.Now().UTC()
 			t := field.Convert(timeType).Interface().(time.Time)
-			var expected time.Time
-			switch param {
-			case "":
-				expected = now
-			default:
-				d, err := tryParseDate(param)
-				if err != nil {
-					expected = now
-				} else {
-					expected = *d
-				}
-			}
+			expected := parseParamToExpectedTime(param)
 			return t.Before(expected)
+		} else if isEmbedded(time.Time{}, field) {
+			expected := parseParamToExpectedTime(param)
+			et, ok := getEmbeddedStruct(field, timeType)
+			if ok {
+				t := et.(time.Time)
+				return t.Before(expected)
+			}
 		}
 	}
 

@@ -78,3 +78,37 @@ func panicIf(err error) {
 		panic(err.Error())
 	}
 }
+
+func isEmbedded(struct1 interface{}, struct2 interface{}) bool {
+	struct1Type := reflect.TypeOf(struct1)
+	struct2Type := reflect.TypeOf(struct2)
+
+	// 遍历 struct2 的所有字段，检查是否有内嵌字段与 struct1 类型匹配
+	for i := 0; i < struct2Type.NumField(); i++ {
+		field := struct2Type.Field(i)
+		if field.Anonymous && field.Type == struct1Type {
+			return true
+		}
+	}
+
+	return false
+}
+
+// getEmbeddedStruct 查找并返回内嵌的结构体（如果存在）
+func getEmbeddedStruct(b interface{}, embeddedType interface{}) (interface{}, bool) {
+	bValue := reflect.ValueOf(b)
+	bType := reflect.TypeOf(b)
+	embeddedTypeValue := reflect.TypeOf(embeddedType)
+
+	// 遍历 B 的所有字段
+	for i := 0; i < bType.NumField(); i++ {
+		field := bType.Field(i)
+		// 判断该字段是否是匿名字段，且类型与 embeddedType 匹配
+		if field.Anonymous && field.Type == embeddedTypeValue {
+			// 获取该字段的值
+			return bValue.Field(i).Interface(), true
+		}
+	}
+
+	return nil, false
+}

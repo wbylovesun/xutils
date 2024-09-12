@@ -203,3 +203,20 @@ func tryParseDate(param string) (*time.Time, error) {
 	}
 	return nil, fmt.Errorf("not supported format")
 }
+
+func parseParamToExpectedTime(param string) time.Time {
+	now := time.Now()
+	var expected time.Time
+	switch param {
+	case "":
+		expected = now
+	default:
+		d, err := tryParseDate(param)
+		if err != nil {
+			expected = now
+		} else {
+			expected = *d
+		}
+	}
+	return expected
+}

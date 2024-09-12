@@ -1,6 +1,6 @@
 module github.com/wbylovesun/xutils
 
-go 1.18
+go 1.21.0
 
 require (
 	github.com/go-playground/validator/v10 v10.22.1
