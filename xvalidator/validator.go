@@ -13,20 +13,20 @@ var (
 	timeType         = reflect.TypeOf(time.Time{})
 )
 
-type defaultValidator struct {
+type Validator struct {
 	once     sync.Once
 	validate *validator.Validate
 }
 
-//var _ binding.StructValidator = &defaultValidator{}
+//var _ binding.StructValidator = &Validator{}
 
 //var timeMark = []string{"today", "week", "month", "yesterday", "last_week", "last_month"}
 
-func (v *defaultValidator) ValidateStruct(obj interface{}) error {
+func (v *Validator) ValidateStruct(obj interface{}) error {
 
 	if kindOfData(obj) == reflect.Struct {
 
-		v.lazyinit()
+		v.lazyInit()
 
 		if err := v.validate.Struct(obj); err != nil {
 			return err
@@ -36,12 +36,12 @@ func (v *defaultValidator) ValidateStruct(obj interface{}) error {
 	return nil
 }
 
-func (v *defaultValidator) Engine() interface{} {
-	v.lazyinit()
+func (v *Validator) Engine() interface{} {
+	v.lazyInit()
 	return v.validate
 }
 
-func (v *defaultValidator) lazyinit() {
+func (v *Validator) lazyInit() {
 	v.once.Do(func() {
 		v.validate = validator.New()
 		v.validate.SetTagName("binding")
@@ -68,8 +68,8 @@ func kindOfData(data interface{}) reflect.Kind {
 	return valueType
 }
 
-func NewValidator() *defaultValidator {
-	return new(defaultValidator)
+func NewValidator() *Validator {
+	return new(Validator)
 }
 
 // asInt returns the parameter as a int64
