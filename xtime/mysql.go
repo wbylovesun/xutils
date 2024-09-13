@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func (j *JsonShortDate) Value() (driver.Value, error) {
+func (j JsonShortDate) Value() (driver.Value, error) {
 	if j.Time().IsZero() {
 		return nil, nil
 	}
@@ -25,7 +25,7 @@ func (j *JsonShortDate) Scan(value interface{}) error {
 	return errors.New("can not convert %+v to timestamp")
 }
 
-func (j *JsonLongDate) Value() (driver.Value, error) {
+func (j JsonLongDate) Value() (driver.Value, error) {
 	if j.Time().IsZero() {
 		return nil, nil
 	}
@@ -44,7 +44,7 @@ func (j *JsonLongDate) Scan(value interface{}) error {
 	return errors.New("can not convert %+v to timestamp")
 }
 
-func (j *JsonTimestamp) Value() (driver.Value, error) {
+func (j JsonTimestamp) Value() (driver.Value, error) {
 	if j.Time().IsZero() {
 		return nil, nil
 	}
