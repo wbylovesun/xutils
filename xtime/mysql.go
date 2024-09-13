@@ -10,7 +10,7 @@ func (j *JsonShortDate) Value() (driver.Value, error) {
 	if j.Time().IsZero() {
 		return nil, nil
 	}
-	return j.Time, nil
+	return j.Time(), nil
 }
 
 func (j *JsonShortDate) Scan(value interface{}) error {
@@ -29,7 +29,7 @@ func (j *JsonLongDate) Value() (driver.Value, error) {
 	if j.Time().IsZero() {
 		return nil, nil
 	}
-	return j.Time, nil
+	return j.Time(), nil
 }
 
 func (j *JsonLongDate) Scan(value interface{}) error {
@@ -39,6 +39,25 @@ func (j *JsonLongDate) Scan(value interface{}) error {
 	v, ok := value.(time.Time)
 	if ok {
 		*j = JsonLongDate(v)
+		return nil
+	}
+	return errors.New("can not convert %+v to timestamp")
+}
+
+func (j *JsonTimestamp) Value() (driver.Value, error) {
+	if j.Time().IsZero() {
+		return nil, nil
+	}
+	return j.Time().Unix(), nil
+}
+
+func (j *JsonTimestamp) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	v, ok := value.(time.Time)
+	if ok {
+		*j = JsonTimestamp(v)
 		return nil
 	}
 	return errors.New("can not convert %+v to timestamp")
