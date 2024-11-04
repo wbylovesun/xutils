@@ -337,3 +337,44 @@ func Test_firstWeekOffset(t *testing.T) {
 		})
 	}
 }
+
+func TestParse(t *testing.T) {
+	type args struct {
+		ts string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    time.Time
+		wantErr bool
+	}{
+		{
+			name: "202301",
+			args: args{
+				ts: "202301",
+			},
+			want:    time.Date(2023, 1, 1, 0, 0, 0, 0, time.Local),
+			wantErr: false,
+		},
+		{
+			name: "20231",
+			args: args{
+				ts: "20231",
+			},
+			want:    time.Date(2023, 1, 1, 0, 0, 0, 0, time.Local),
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Parse(tt.args.ts)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Parse() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Parse() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
