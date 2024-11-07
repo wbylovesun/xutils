@@ -3,6 +3,7 @@ package xvalidator
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/wbylovesun/xutils/xtime"
 	"regexp"
 	"strconv"
 	"strings"
@@ -115,11 +116,7 @@ var reDateOnly = regexp.MustCompile(`^(today|yesterday|tomorrow|first day of thi
 var reDateTime = regexp.MustCompile(`^(today|yesterday|tomorrow|(-?\d+)\s*(?:(year|month|week|day)s?)|first day of this month)\s*(\d{2}:\d{2}:\d{2})$`)
 
 func tryParseDate(param string) (*time.Time, error) {
-	expected, err := time.Parse("2006-01-02 15:04:05", param)
-	if err == nil {
-		return &expected, nil
-	}
-	expected, err = time.Parse("2006-01-02", param)
+	expected, err := xtime.Parse(param)
 	if err == nil {
 		return &expected, nil
 	}
