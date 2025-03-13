@@ -127,11 +127,11 @@ func Max[T SliceElementType](data []T) *T {
 }
 
 func Unique[T SliceElementType](elements []T) []T {
-	f := map[T]bool{}
+	f := map[T]struct{}{}
 	var t []T
 	for _, ele := range elements {
 		if _, ok := f[ele]; !ok {
-			f[ele] = true
+			f[ele] = struct{}{}
 			t = append(t, ele)
 		}
 	}
@@ -171,8 +171,12 @@ func Diff[T SliceElementType](A, B []T) []T {
 
 func diff[T SliceElementType](A, B []T) []T {
 	var diffed []T
+	var t = make(map[T]struct{})
+	for _, i := range B {
+		t[i] = struct{}{}
+	}
 	for _, i := range A {
-		if !Contains(B, i) {
+		if _, ok := t[i]; !ok {
 			diffed = append(diffed, i)
 		}
 	}
