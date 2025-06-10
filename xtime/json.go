@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func (j *JsonLongDate) MarshalJSON() ([]byte, error) {
+func (j *DateTime) MarshalJSON() ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	buf.Write([]byte{'"'})
 	buf.WriteString(j.String())
@@ -15,14 +15,14 @@ func (j *JsonLongDate) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (j *JsonLongDate) UnmarshalJSON(data []byte) error {
-	t, err := time.ParseInLocation(`"`+LongFormat+`"`, string(data), time.Local)
-	*j = JsonLongDate(t)
+func (j *DateTime) UnmarshalJSON(data []byte) error {
+	t, err := time.ParseInLocation(`"`+time.DateTime+`"`, string(data), time.Local)
+	*j = DateTime(t)
 	return err
 }
 
-func (j *JsonLongDate) String(format ...string) string {
-	layout := LongFormat
+func (j *DateTime) String(format ...string) string {
+	layout := time.DateTime
 	if len(format) > 0 {
 		layout = format[0]
 	}
@@ -30,12 +30,12 @@ func (j *JsonLongDate) String(format ...string) string {
 	return v.Format(layout)
 }
 
-func (j *JsonLongDate) Time() time.Time {
+func (j *DateTime) Time() time.Time {
 	v := time.Time(*j)
 	return v
 }
 
-func (j *JsonShortDate) MarshalJSON() ([]byte, error) {
+func (j *Date) MarshalJSON() ([]byte, error) {
 	buf := bytes.NewBuffer(nil)
 	buf.Write([]byte{'"'})
 	buf.WriteString(j.String())
@@ -43,14 +43,14 @@ func (j *JsonShortDate) MarshalJSON() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-func (j *JsonShortDate) UnmarshalJSON(data []byte) error {
-	t, err := time.ParseInLocation(`"`+ShortFormat+`"`, string(data), time.Local)
-	*j = JsonShortDate(t)
+func (j *Date) UnmarshalJSON(data []byte) error {
+	t, err := time.ParseInLocation(`"`+time.DateOnly+`"`, string(data), time.Local)
+	*j = Date(t)
 	return err
 }
 
-func (j *JsonShortDate) String(format ...string) string {
-	layout := ShortFormat
+func (j *Date) String(format ...string) string {
+	layout := time.DateOnly
 	if len(format) > 0 {
 		layout = format[0]
 	}
@@ -58,7 +58,7 @@ func (j *JsonShortDate) String(format ...string) string {
 	return v.Format(layout)
 }
 
-func (j *JsonShortDate) Time() time.Time {
+func (j *Date) Time() time.Time {
 	v := time.Time(*j)
 	return v
 }
@@ -81,7 +81,7 @@ func (j *JsonTimestamp) UnmarshalJSON(data []byte) error {
 }
 
 func (j *JsonTimestamp) String(format ...string) string {
-	layout := LongFormat
+	layout := time.DateTime
 	if len(format) > 0 {
 		layout = format[0]
 	}

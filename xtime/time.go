@@ -8,11 +8,9 @@ import (
 )
 
 const (
-	ShortFormat     = "2006-01-02"
-	LongFormat      = "2006-01-02 15:04:05"
 	YearMonthFormat = "200601"
 	YmdFormat       = "20060102"
-	DefaultFormat   = LongFormat
+	DefaultFormat   = time.DateTime
 	LongTimeFormat  = "15:04:05"
 	ShortTimeFormat = "15:04"
 )
@@ -93,11 +91,11 @@ func YearQuarter(t time.Time) int {
 }
 
 func ShortDate(t time.Time) string {
-	return t.Format(ShortFormat)
+	return t.Format(time.DateOnly)
 }
 
 func LongDate(t time.Time) string {
-	return t.Format(LongFormat)
+	return t.Format(time.DateTime)
 }
 
 func YmdDate(t time.Time) string {
@@ -219,7 +217,7 @@ func firstWeekOffset(year, dow, doy int) int {
 
 func parseDate(date, format string) (time.Time, error) {
 	if format == "" {
-		format = ShortFormat
+		format = time.DateOnly
 	}
 	return time.ParseInLocation(format, date, time.Local)
 }
