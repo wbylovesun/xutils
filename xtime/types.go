@@ -31,6 +31,18 @@ type ComparableMonthRange struct {
 
 type Date time.Time
 
+func (j *Date) IsZero() bool {
+	return j.Time().IsZero()
+}
+
 type DateTime time.Time
 
+func (j *DateTime) IsZero() bool {
+	return j.Time().IsZero()
+}
+
 type JsonTimestamp time.Time
+
+func (j *JsonTimestamp) IsZero() bool {
+	return j.Time().IsZero()
+}
