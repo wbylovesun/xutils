@@ -117,7 +117,7 @@ func Latest30Days() *DateRange {
 	return LatestNDays(30)
 }
 
-//Passed30Days 过去30天，不包含今天
+// Passed30Days 过去30天，不包含今天
 func Passed30Days() *DateRange {
 	return PassedNDays(30)
 }

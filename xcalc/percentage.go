@@ -7,7 +7,7 @@ import (
 	"strconv"
 )
 
-func numberPrecision[T types.GenericNumber](numerator, denominator T, precision int) (float64, error) {
+func numberPrecision[T types.Number](numerator, denominator T, precision int) (float64, error) {
 	if denominator == 0 {
 		return 0, fmt.Errorf("denominator can not be 0")
 	}
@@ -17,7 +17,7 @@ func numberPrecision[T types.GenericNumber](numerator, denominator T, precision 
 	return strconv.ParseFloat(fmt.Sprintf(precisionFormat, n/d), 64)
 }
 
-func NumberPrecision[T types.GenericNumber](numerator, denominator T, precision int) float64 {
+func NumberPrecision[T types.Number](numerator, denominator T, precision int) float64 {
 	v, err := numberPrecision(numerator, denominator, precision)
 	if err != nil {
 		return 0
@@ -26,7 +26,7 @@ func NumberPrecision[T types.GenericNumber](numerator, denominator T, precision 
 }
 
 // Percentage 默认输出带2位小数的比例，错误时报错
-func Percentage[T types.GenericNumber](numerator, denominator T) (float64, error) {
+func Percentage[T types.Number](numerator, denominator T) (float64, error) {
 	f, err := numberPrecision(numerator, denominator, 4)
 	if err != nil {
 		return 0, err
@@ -35,7 +35,7 @@ func Percentage[T types.GenericNumber](numerator, denominator T) (float64, error
 }
 
 // PercentageNoDigit 不带小数，错误时报错
-func PercentageNoDigit[T types.GenericNumber](numerator, denominator T) (int, error) {
+func PercentageNoDigit[T types.Number](numerator, denominator T) (int, error) {
 	if denominator == 0 {
 		return 0, fmt.Errorf("dominator can not be 0")
 	}
@@ -45,7 +45,7 @@ func PercentageNoDigit[T types.GenericNumber](numerator, denominator T) (int, er
 }
 
 // PercentagePrecision 自定义小数位长度，错误时报错
-func PercentagePrecision[T types.GenericNumber](numerator, denominator T, precision int) (float64, error) {
+func PercentagePrecision[T types.Number](numerator, denominator T, precision int) (float64, error) {
 	v, err := numberPrecision(numerator, denominator, precision+4)
 	if err != nil {
 		return 0, err
@@ -54,12 +54,12 @@ func PercentagePrecision[T types.GenericNumber](numerator, denominator T, precis
 }
 
 // PercentageWithSuppression 带2位小数，抑制错误
-func PercentageWithSuppression[T types.GenericNumber](numerator, denominator T) float64 {
+func PercentageWithSuppression[T types.Number](numerator, denominator T) float64 {
 	return PercentagePrecisionWithSuppression(numerator, denominator, 2)
 }
 
 // PercentageNoDigitWithSuppression 不带小数，抑制错误
-func PercentageNoDigitWithSuppression[T types.GenericNumber](numerator, denominator T) int {
+func PercentageNoDigitWithSuppression[T types.Number](numerator, denominator T) int {
 	if math.IsNaN(float64(numerator)) || math.IsNaN(float64(denominator)) {
 		return 0
 	}
@@ -74,7 +74,7 @@ func PercentageNoDigitWithSuppression[T types.GenericNumber](numerator, denomina
 }
 
 // PercentagePrecisionWithSuppression 自定义小数位长度，抑制错误
-func PercentagePrecisionWithSuppression[T types.GenericNumber](numerator, denominator T, precision int) float64 {
+func PercentagePrecisionWithSuppression[T types.Number](numerator, denominator T, precision int) float64 {
 	if math.IsNaN(float64(numerator)) || math.IsNaN(float64(denominator)) {
 		return 0
 	}
@@ -105,7 +105,7 @@ func PromiseWithTwoDigits(n float64) float64 {
 // PercentageWithTwoDigits 默认输出带2位小数的比例，忽略错误
 // 根据给出的两个数字，计算出百分比，默认保留2位小数
 // 使用的是PercentagePrecisionWithSuppression，本身会乘以100，因此需要使用PromisePercentWithTwoDigits
-func PercentageWithTwoDigits[T types.GenericNumber](numerator, denominator T) float64 {
+func PercentageWithTwoDigits[T types.Number](numerator, denominator T) float64 {
 	v, err := Percentage(numerator, denominator)
 	if err != nil {
 		return 0

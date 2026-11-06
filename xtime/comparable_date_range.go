@@ -27,7 +27,7 @@ func (cdr *ComparableDateRange) MonthOnMonth() *ComparableDateRange {
 	}
 }
 
-//YearOnYear 年同比
+// YearOnYear 年同比
 func (cdr ComparableDateRange) YearOnYear() *ComparableDateRange {
 	yoyFrom := cdr.from.AddDate(-1, 0, 0)
 	yoyTo := cdr.to.AddDate(-1, 0, 0)

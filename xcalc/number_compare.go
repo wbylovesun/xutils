@@ -8,7 +8,7 @@ import (
 // Min Return minimum value in z.
 // T(0) returned if non-exists in z.
 // Value of index(0) if only 1 item in z.
-func Min[T types.GenericNumber](z ...T) T {
+func Min[T types.Number](z ...T) T {
 	if len(z) == 0 {
 		return T(0)
 	}
@@ -27,7 +27,7 @@ func Min[T types.GenericNumber](z ...T) T {
 // Max Return maximum value in z.
 // T(0) returned if non-exists in z.
 // Value of index(0) if only 1 item in z.
-func Max[T types.GenericNumber](z ...T) T {
+func Max[T types.Number](z ...T) T {
 	if len(z) == 0 {
 		return T(0)
 	}
@@ -46,14 +46,14 @@ func Max[T types.GenericNumber](z ...T) T {
 // Gte0
 //
 // Deprecated: Should use PromiseGte0 instead
-func Gte0[T types.GenericNumber](x T) T {
+func Gte0[T types.Number](x T) T {
 	return Gte(x, 0)
 }
 
 // Gte
 //
 // Deprecated: Should use PromiseGte instead
-func Gte[T types.GenericNumber](x, y T) T {
+func Gte[T types.Number](x, y T) T {
 	if x < y {
 		return y
 	}
@@ -61,26 +61,26 @@ func Gte[T types.GenericNumber](x, y T) T {
 }
 
 // PromiseGte0 Promise value of x must be greater than or equal 0
-func PromiseGte0[T types.GenericNumber](x T) T {
+func PromiseGte0[T types.Number](x T) T {
 	return PromiseGte(x, 0)
 }
 
 // PromiseGte Promise value of x must be greater than or equal y
-func PromiseGte[T types.GenericNumber](x, y T) T {
+func PromiseGte[T types.Number](x, y T) T {
 	return Max(x, y)
 }
 
 // Lte100
 //
 // Deprecated: Should use PromiseLte100 instead
-func Lte100[T types.GenericNumber](x T) T {
+func Lte100[T types.Number](x T) T {
 	return Lte(x, 100)
 }
 
 // Lte
 //
 // Deprecated: Should use PromiseLte instead
-func Lte[T types.GenericNumber](x, y T) T {
+func Lte[T types.Number](x, y T) T {
 	if x > y {
 		return y
 	}
@@ -88,31 +88,31 @@ func Lte[T types.GenericNumber](x, y T) T {
 }
 
 // PromiseLte100 Promise value of x must be less than or equal 100
-func PromiseLte100[T types.GenericNumber](x T) T {
+func PromiseLte100[T types.Number](x T) T {
 	return PromiseLte(x, 100)
 }
 
 // PromiseLte Promise value of x must be less than or equal y
-func PromiseLte[T types.GenericNumber](x, y T) T {
+func PromiseLte[T types.Number](x, y T) T {
 	return Min(x, y)
 }
 
 // IsGte Check x is greater than or equal y or not
-func IsGte[T types.GenericNumber](x, y T) bool {
+func IsGte[T types.Number](x, y T) bool {
 	return x >= y
 }
 
 // IsLte Check x is less than or equal y or not
-func IsLte[T types.GenericNumber](x, y T) bool {
+func IsLte[T types.Number](x, y T) bool {
 	return x <= y
 }
 
 // IsGt Check x is greater than y or not
-func IsGt[T types.GenericNumber](x, y T) bool {
+func IsGt[T types.Number](x, y T) bool {
 	return x > y
 }
 
 // IsLt Check x is less than y or not
-func IsLt[T types.GenericNumber](x, y T) bool {
+func IsLt[T types.Number](x, y T) bool {
 	return x < y
 }

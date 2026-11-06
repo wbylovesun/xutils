@@ -1,6 +1,7 @@
 package xslice
 
 import (
+	"cmp"
 	"sort"
 )
 
@@ -12,14 +13,14 @@ func Clone[T any](data []T) []T {
 }
 
 // Sort 对切片原地升序排序，会修改传入的切片。
-func Sort[T SliceElementType](data []T) {
+func Sort[T cmp.Ordered](data []T) {
 	sort.Slice(data, func(i, j int) bool {
 		return data[i] < data[j]
 	})
 }
 
 // CloneSort 返回升序排序后的新副本，原切片保持不变。
-func CloneSort[T SliceElementType](data []T) []T {
+func CloneSort[T cmp.Ordered](data []T) []T {
 	t := Clone(data)
 	Sort(t)
 	return t
@@ -27,7 +28,7 @@ func CloneSort[T SliceElementType](data []T) []T {
 
 // BisectionSearch 二分查找 target，返回其在排序后切片中的下标，未找到时返回 -1。
 // 注意：查找前会先对 list 原地排序（会修改调用方传入的切片），返回的下标基于排序后的顺序。
-func BisectionSearch[T SliceElementType](list []T, target T) int {
+func BisectionSearch[T cmp.Ordered](list []T, target T) int {
 	Sort(list)
 	low := 0
 	high := len(list) - 1
@@ -74,7 +75,7 @@ func Contains[T comparable](data []T, ct T) bool {
 
 // ContainsSlice 判断 ct 中的每个元素是否都存在于 data 中。
 // 双方会先去重再比较，按集合语义处理，不考虑元素的重复次数。
-func ContainsSlice[T SliceElementType](data []T, ct []T) bool {
+func ContainsSlice[T cmp.Ordered](data []T, ct []T) bool {
 	nData := Unique(data)
 	nCt := Unique(ct)
 	Sort(nData)
@@ -111,7 +112,7 @@ func Map[T any](f func(v T) T, data ...[]T) []T {
 }
 
 // Min 返回切片中最小元素的指针，空切片返回 nil。
-func Min[T SliceElementType](data []T) *T {
+func Min[T cmp.Ordered](data []T) *T {
 	if len(data) == 0 {
 		return nil
 	}
@@ -125,7 +126,7 @@ func Min[T SliceElementType](data []T) *T {
 }
 
 // Max 返回切片中最大元素的指针，空切片返回 nil。
-func Max[T SliceElementType](data []T) *T {
+func Max[T cmp.Ordered](data []T) *T {
 	if len(data) == 0 {
 		return nil
 	}
@@ -173,14 +174,14 @@ func Intersection[T comparable](A, B []T) []T {
 }
 
 // CloneDiff 返回 A 中不在 B 里的元素；先复制再排序，不修改入参切片。
-func CloneDiff[T SliceElementType](A, B []T) []T {
+func CloneDiff[T cmp.Ordered](A, B []T) []T {
 	a := CloneSort(A)
 	b := CloneSort(B)
 	return diff(a, b)
 }
 
 // Diff 返回 A 中不在 B 里的元素。注意：会原地排序 A 和 B，不希望修改入参时请使用 CloneDiff。
-func Diff[T SliceElementType](A, B []T) []T {
+func Diff[T cmp.Ordered](A, B []T) []T {
 	Sort(A)
 	Sort(B)
 	return diff(A, B)

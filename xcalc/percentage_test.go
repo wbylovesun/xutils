@@ -325,11 +325,11 @@ func TestPromiseWithTwoDigits(t *testing.T) {
 }
 
 func TestPercentageWithTwoDigits(t *testing.T) {
-	type args[T types.GenericNumber] struct {
+	type args[T types.Number] struct {
 		numerator   T
 		denominator T
 	}
-	type testCase[T types.GenericNumber] struct {
+	type testCase[T types.Number] struct {
 		name string
 		args args[T]
 		want float64
@@ -362,12 +362,12 @@ func TestPercentageWithTwoDigits(t *testing.T) {
 }
 
 func TestNumberPrecision(t *testing.T) {
-	type args[T types.GenericNumber] struct {
+	type args[T types.Number] struct {
 		numerator   T
 		denominator T
 		precision   int
 	}
-	type testCase[T types.GenericNumber] struct {
+	type testCase[T types.Number] struct {
 		name string
 		args args[T]
 		want float64
@@ -429,12 +429,12 @@ func TestNumberPrecision(t *testing.T) {
 }
 
 func TestPercentagePrecisionWithSuppression(t *testing.T) {
-	type args[T types.GenericNumber] struct {
+	type args[T types.Number] struct {
 		numerator   T
 		denominator T
 		precision   int
 	}
-	type testCase[T types.GenericNumber] struct {
+	type testCase[T types.Number] struct {
 		name string
 		args args[T]
 		want float64

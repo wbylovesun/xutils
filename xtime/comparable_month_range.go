@@ -13,7 +13,7 @@ func (cmr *ComparableMonthRange) MonthOnMonth() *ComparableMonthRange {
 	}
 }
 
-//YearOnYear 年同比
+// YearOnYear 年同比
 func (cmr ComparableMonthRange) YearOnYear() *ComparableMonthRange {
 	yoyFrom := cmr.from.AddDate(-1, 0, 0)
 	yoyTo := cmr.to.AddDate(-1, 0, 0)
