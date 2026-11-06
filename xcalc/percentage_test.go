@@ -501,10 +501,9 @@ func TestPercentageRatio(t *testing.T) {
 		pre float64
 	}
 	tests := []struct {
-		name    string
-		args    args
-		want    float64
-		wantErr bool
+		name string
+		args args
+		want float64
 	}{
 		{
 			name: "181,162",
@@ -512,8 +511,7 @@ func TestPercentageRatio(t *testing.T) {
 				now: 181,
 				pre: 162,
 			},
-			want:    11.73,
-			wantErr: false,
+			want: 11.73,
 		},
 		{
 			name: "162,181",
@@ -521,8 +519,7 @@ func TestPercentageRatio(t *testing.T) {
 				now: 162,
 				pre: 181,
 			},
-			want:    -10.5,
-			wantErr: false,
+			want: -10.5,
 		},
 		{
 			name: "0,181",
@@ -530,8 +527,7 @@ func TestPercentageRatio(t *testing.T) {
 				now: 0,
 				pre: 181,
 			},
-			want:    -100,
-			wantErr: false,
+			want: -100,
 		},
 		{
 			name: "162,0",
@@ -539,8 +535,7 @@ func TestPercentageRatio(t *testing.T) {
 				now: 162,
 				pre: 0,
 			},
-			want:    math.Inf(0),
-			wantErr: false,
+			want: math.Inf(0),
 		},
 		{
 			name: "0,0",
@@ -548,18 +543,12 @@ func TestPercentageRatio(t *testing.T) {
 				now: 0,
 				pre: 0,
 			},
-			want:    0,
-			wantErr: false,
+			want: 0,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := PercentageRatio(tt.args.now, tt.args.pre)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("PercentageRatio() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if got != tt.want {
+			if got := PercentageRatio(tt.args.now, tt.args.pre); got != tt.want {
 				t.Errorf("PercentageRatio() got = %v, want %v", got, tt.want)
 			}
 		})

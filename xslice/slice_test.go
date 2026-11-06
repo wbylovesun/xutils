@@ -1,399 +1,306 @@
 package xslice
 
 import (
-	"github.com/wbylovesun/xutils/xstrings"
 	"reflect"
+	"strconv"
 	"testing"
 )
 
-func TestMin(t *testing.T) {
-	type args struct {
-		data []int
-	}
-	tests := []struct {
-		name string
-		args args
-		want *int
-	}{
-		{
-			name: "length is 0",
-			args: args{data: []int{}},
-			want: nil,
-		},
-		{
-			name: "[]int{2,3,5}",
-			args: args{data: []int{2, 3, 5}},
-			want: func() *int { v := 2; return &v }(),
-		},
-		{
-			name: "[]int{2}",
-			args: args{data: []int{2}},
-			want: func() *int { v := 2; return &v }(),
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := Min(tt.args.data)
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Min() got = %v, want %v", got, tt.want)
-			}
-		})
+func assertEqual[T any](t *testing.T, name string, got, want []T) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("%s = %v, want %v", name, got, want)
 	}
 }
 
-func TestMax(t *testing.T) {
-	type args struct {
-		data []int
+func TestClone(t *testing.T) {
+	src := []int{1, 2, 3}
+	got := Clone(src)
+	assertEqual(t, "Clone(src)", got, []int{1, 2, 3})
+
+	// 修改副本不应影响原切片（不共享底层数组）
+	got[0] = 100
+	if src[0] != 1 {
+		t.Errorf("Clone 与原切片共享底层数组：修改副本后 src[0] = %d", src[0])
 	}
-	tests := []struct {
-		name string
-		args args
-		want *int
-	}{
-		{
-			name: "length is 0",
-			args: args{data: []int{}},
-			want: nil,
-		},
-		{
-			name: "[]int{2,3,5}",
-			args: args{data: []int{2, 3, 5}},
-			want: func() *int { v := 5; return &v }(),
-		},
-		{
-			name: "[]int{2}",
-			args: args{data: []int{2}},
-			want: func() *int { v := 2; return &v }(),
-		},
+
+	if n := len(Clone([]int{})); n != 0 {
+		t.Errorf("len(Clone([]int{})) = %d, want 0", n)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := Max(tt.args.data); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Max() = %v, want %v", got, tt.want)
-			}
-		})
+	if n := len(Clone[int](nil)); n != 0 {
+		t.Errorf("len(Clone[int](nil)) = %d, want 0", n)
 	}
 }
 
-func TestMaxString(t *testing.T) {
-	type args struct {
-		data []string
+func TestSort(t *testing.T) {
+	ints := []int{3, 1, 2, 5, 4}
+	Sort(ints)
+	assertEqual(t, "Sort(ints)", ints, []int{1, 2, 3, 4, 5})
+
+	strs := []string{"b", "a", "c"}
+	Sort(strs)
+	assertEqual(t, "Sort(strs)", strs, []string{"a", "b", "c"})
+
+	empty := []int{}
+	Sort(empty)
+	assertEqual(t, "Sort(empty)", empty, []int{})
+}
+
+func TestCloneSort(t *testing.T) {
+	src := []int{3, 1, 2}
+	got := CloneSort(src)
+	assertEqual(t, "CloneSort(src)", got, []int{1, 2, 3})
+	assertEqual(t, "CloneSort 后原切片", src, []int{3, 1, 2}) // 不应被修改
+}
+
+func TestBisectionSearch(t *testing.T) {
+	list := []int{5, 1, 4, 2, 3}
+	if idx := BisectionSearch(list, 3); idx < 0 || list[idx] != 3 {
+		t.Errorf("BisectionSearch(list, 3) = %d, 应命中元素 3", idx)
 	}
-	tests := []struct {
-		name string
-		args args
-		want *string
-	}{
-		{
-			name: "length is 0",
-			args: args{data: []string{}},
-			want: nil,
-		},
-		{
-			name: "[]string{hello, world, what}",
-			args: args{data: []string{"hello", "world", "what"}},
-			want: func() *string { v := "world"; return &v }(),
-		},
-		{
-			name: "[]string{hello}",
-			args: args{data: []string{"hello"}},
-			want: func() *string { v := "hello"; return &v }(),
-		},
+	if idx := BisectionSearch(list, 10); idx != -1 {
+		t.Errorf("BisectionSearch(list, 10) = %d, want -1", idx)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := Max(tt.args.data); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Max() = %v, want %v", got, tt.want)
-			}
-		})
+	if idx := BisectionSearch([]int{}, 1); idx != -1 {
+		t.Errorf("BisectionSearch([], 1) = %d, want -1", idx)
+	}
+	if idx := BisectionSearch[int](nil, 1); idx != -1 {
+		t.Errorf("BisectionSearch(nil, 1) = %d, want -1", idx)
+	}
+
+	// 重复元素：应命中任意一个相等的元素
+	dup := []int{1, 2, 2, 3}
+	if idx := BisectionSearch(dup, 2); idx < 1 || idx > 2 {
+		t.Errorf("BisectionSearch(dup, 2) = %d, 应命中下标 1 或 2", idx)
+	}
+
+	if idx := BisectionSearch([]string{"b", "a"}, "a"); idx < 0 {
+		t.Errorf("BisectionSearch(string) = %d, 应命中元素", idx)
+	}
+
+	// 文档化副作用：查找会对输入切片原地排序
+	mut := []int{2, 1}
+	_ = BisectionSearch(mut, 2)
+	assertEqual(t, "BisectionSearch 原地排序输入", mut, []int{1, 2})
+}
+
+func TestFilter(t *testing.T) {
+	data := []int{1, 2, 3, 4, 5}
+	// Filter 为剔除语义：f 返回 true 的元素会被剔除
+	got := Filter(data, func(v, k int) bool { return v%2 == 0 })
+	assertEqual(t, "Filter(剔除偶数)", got, []int{1, 3, 5})
+
+	if n := len(Filter([]int{}, func(v, k int) bool { return true })); n != 0 {
+		t.Errorf("len(Filter([], ...)) = %d, want 0", n)
+	}
+}
+
+func TestContains(t *testing.T) {
+	if !Contains([]int{1, 2, 3}, 2) {
+		t.Error("Contains([1,2,3], 2) = false, want true")
+	}
+	if Contains([]int{1, 2, 3}, 9) {
+		t.Error("Contains([1,2,3], 9) = true, want false")
+	}
+	if Contains([]int{}, 1) {
+		t.Error("Contains([], 1) = true, want false")
+	}
+	if Contains[int](nil, 1) {
+		t.Error("Contains(nil, 1) = true, want false")
+	}
+	if !Contains([]string{"a", "b"}, "b") {
+		t.Error(`Contains(["a","b"], "b") = false, want true`)
 	}
 }
 
 func TestContainsSlice(t *testing.T) {
-	type args struct {
-		data []int
-		ct   []int
+	if !ContainsSlice([]int{3, 1, 2}, []int{2, 1}) {
+		t.Error("ContainsSlice([3,1,2], [2,1]) = false, want true")
 	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{
-			name: "containsTrue",
-			args: args{
-				data: []int{2, 3, 5, 8, 9, 13, 21, 34, 35, 46, 47, 48, 51, 52, 54, 55, 58, 61, 63, 69},
-				ct:   []int{2, 48, 63},
-			},
-			want: true,
-		},
-		{
-			name: "duplicateContainsTrue",
-			args: args{
-				data: []int{2, 3, 5, 8, 9, 13, 21, 34, 35, 46, 47, 48, 51, 52, 54, 55, 58, 61, 63, 69},
-				ct:   []int{2, 48, 5, 63, 5},
-			},
-			want: true,
-		},
+	if ContainsSlice([]int{1, 2}, []int{3}) {
+		t.Error("ContainsSlice([1,2], [3]) = true, want false")
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := ContainsSlice(tt.args.data, tt.args.ct); got != tt.want {
-				t.Errorf("ContainsSlice() = %v, want %v", got, tt.want)
-			}
-		})
+	if ContainsSlice([]int{1}, []int{1, 2}) {
+		t.Error("ContainsSlice([1], [1,2]) = true, want false")
 	}
-}
-
-func TestBisectionSearch(t *testing.T) {
-	type args struct {
-		list   []int
-		target int
+	if !ContainsSlice([]int{1, 2}, []int{}) {
+		t.Error("ContainsSlice([1,2], []) = false, want true（空 ct 视为包含）")
 	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{
-			name: "search 8 in []int{2,3,8,10}",
-			args: args{
-				list:   []int{2, 3, 8, 10},
-				target: 8,
-			},
-			want: 2,
-		},
-		{
-			name: "not found",
-			args: args{
-				list:   []int{2, 3, 8, 10},
-				target: 4,
-			},
-			want: -1,
-		},
-		{
-			name: "empty slice",
-			args: args{
-				list:   nil,
-				target: 4,
-			},
-			want: -1,
-		},
-		{
-			name: "only 1 item slice",
-			args: args{
-				list:   []int{4},
-				target: 4,
-			},
-			want: 0,
-		},
+	if !ContainsSlice[int](nil, nil) {
+		t.Error("ContainsSlice(nil, nil) = false, want true")
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := BisectionSearch(tt.args.list, tt.args.target); got != tt.want {
-				t.Errorf("BisectionSearch() = %v, want %v", got, tt.want)
-			}
-		})
+	if ContainsSlice([]int{}, []int{1}) {
+		t.Error("ContainsSlice([], [1]) = true, want false")
 	}
-}
-
-func TestFilter(t *testing.T) {
-	type args struct {
-		data []int
-		f    func(v int, k int) bool
-	}
-	tests := []struct {
-		name string
-		args args
-		want []int
-	}{
-		{
-			name: "filter value lte 10",
-			args: args{
-				data: []int{4, 6, 7, 10, 11, 13, 21},
-				f: func(v int, k int) bool {
-					return v <= 10
-				},
-			},
-			want: []int{11, 13, 21},
-		},
-		{
-			name: "filter value gt 10",
-			args: args{
-				data: []int{4, 6, 7, 10, 11, 13, 21},
-				f: func(v int, k int) bool {
-					return v > 10
-				},
-			},
-			want: []int{4, 6, 7, 10},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := Filter(tt.args.data, tt.args.f); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Filter() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestFilterString(t *testing.T) {
-	type args struct {
-		data []string
-		f    func(v string, k int) bool
-	}
-	tests := []struct {
-		name string
-		args args
-		want []string
-	}{
-		{
-			name: "filter value not start with hello",
-			args: args{
-				data: []string{"hello world", "what's up", "hello kitty", "hello peppa", "susy sheep", "hello baby"},
-				f: func(v string, k int) bool {
-					return !xstrings.StartsWith(v, "hello")
-				},
-			},
-			want: []string{"hello world", "hello kitty", "hello peppa", "hello baby"},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := Filter(tt.args.data, tt.args.f); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Filter() = %v, want %v", got, tt.want)
-			}
-		})
+	// 注意：实现先对 ct 做 Unique 去重，因此重复元素按集合语义处理。
+	// 若期望多重集语义（数据中必须有足够数量的重复元素），此处应为 false，见问题清单。
+	if !ContainsSlice([]int{1}, []int{1, 1}) {
+		t.Error("ContainsSlice([1], [1,1]) = false, want true（按集合语义）")
 	}
 }
 
 func TestWalk(t *testing.T) {
-	type args struct {
-		data []int
-		f    func(v int, k int) int
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		{
-			name: "multiple 2",
-			args: args{
-				data: []int{2, 3, 8, 12},
-				f: func(v int, k int) int {
-					return v * 2
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var x []int
-			copy(x, tt.args.data)
-			Walk(tt.args.data, tt.args.f)
-			for k, v := range x {
-				if v*2 != tt.args.data[k] {
-					t.Errorf("wants %v, got %v", v*2, tt.args.data[k])
-				}
-			}
-		})
+	data := []int{1, 2, 3}
+	Walk(data, func(v, k int) int { return v * 2 })
+	assertEqual(t, "Walk 后", data, []int{2, 4, 6})
+
+	lastK := -1
+	Walk(data, func(v, k int) int { lastK = k; return v })
+	if lastK != 2 {
+		t.Errorf("Walk 回调最后收到的 k = %d, want 2", lastK)
 	}
 }
 
 func TestMap(t *testing.T) {
-	type args struct {
-		f    func(v int) int
-		data [][]int
-	}
-	tests := []struct {
-		name string
-		args args
-		want []int
-	}{
-		{
-			name: "multiple 2",
-			args: args{
-				f: func(v int) int {
-					return v * 2
-				},
-				data: [][]int{{1, 2, 3, 5, 7}, {4}},
-			},
-			want: []int{2, 4, 6, 10, 14, 8},
-		},
-		{
-			name: "sub 2",
-			args: args{
-				f: func(v int) int {
-					return v - 2
-				},
-				data: [][]int{{1, 2, 3, 5, 7}, {4}},
-			},
-			want: []int{-1, 0, 1, 3, 5, 2},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := Map(tt.args.f, tt.args.data...); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Map() = %v, want %v", got, tt.want)
-			}
-		})
+	got := Map(func(v int) int { return v * 2 }, []int{1, 2}, []int{3})
+	assertEqual(t, "Map 多切片", got, []int{2, 4, 6})
+
+	if n := len(Map(func(v int) int { return v })); n != 0 {
+		t.Errorf("len(Map(无切片)) = %d, want 0", n)
 	}
 }
 
-//func TestJoin(t *testing.T) {
-//	type args[T SliceElementType] struct {
-//		data []T
-//		sep  string
-//	}
-//	type testCase[T SliceElementType] struct {
-//		name string
-//		args args[T]
-//		want string
-//	}
-//	tests := []testCase[int8]{
-//		{
-//			name: "int",
-//			args: args[int8]{
-//				data: []int8{1, 2, -1, 0},
-//				sep:  ",",
-//			},
-//			want: "1,2,-1,0",
-//		},
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := Join(tt.args.data, tt.args.sep); got != tt.want {
-//				t.Errorf("Join() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
+func TestMin(t *testing.T) {
+	if got := Min([]int{3, 1, 2}); got == nil || *got != 1 {
+		t.Errorf("Min([3,1,2]) = %v, want 指向 1", got)
+	}
+	if got := Min([]int{-1, -5}); got == nil || *got != -5 {
+		t.Errorf("Min([-1,-5]) = %v, want 指向 -5", got)
+	}
+	if got := Min([]int{}); got != nil {
+		t.Errorf("Min([]) = %v, want nil", got)
+	}
+	if got := Min([]int{7}); got == nil || *got != 7 {
+		t.Errorf("Min([7]) = %v, want 指向 7", got)
+	}
+	if got := Min([]string{"b", "a"}); got == nil || *got != "a" {
+		t.Errorf(`Min(["b","a"]) = %v, want 指向 "a"`, got)
+	}
+}
+
+func TestMax(t *testing.T) {
+	if got := Max([]int{3, 1, 2}); got == nil || *got != 3 {
+		t.Errorf("Max([3,1,2]) = %v, want 指向 3", got)
+	}
+	if got := Max([]int{}); got != nil {
+		t.Errorf("Max([]) = %v, want nil", got)
+	}
+	if got := Max([]int{-7}); got == nil || *got != -7 {
+		t.Errorf("Max([-7]) = %v, want 指向 -7", got)
+	}
+}
+
+func TestUnique(t *testing.T) {
+	assertEqual(t, "Unique", Unique([]int{1, 2, 1, 3, 2}), []int{1, 2, 3})
+	assertEqual(t, "Unique strings", Unique([]string{"a", "b", "a"}), []string{"a", "b"})
+	if n := len(Unique([]int{})); n != 0 {
+		t.Errorf("len(Unique([])) = %d, want 0", n)
+	}
+	if n := len(Unique[int](nil)); n != 0 {
+		t.Errorf("len(Unique[int](nil)) = %d, want 0", n)
+	}
+}
+
+func TestDistinct(t *testing.T) {
+	assertEqual(t, "Distinct", Distinct([]int{1, 1, 2}), []int{1, 2})
+}
+
+func TestIntersection(t *testing.T) {
+	assertEqual(t, "Intersection", Intersection([]int{1, 2, 3}, []int{2, 3, 4}), []int{2, 3})
+
+	if n := len(Intersection([]int{1, 2}, []int{3, 4})); n != 0 {
+		t.Errorf("len(Intersection(无交集)) = %d, want 0", n)
+	}
+	if n := len(Intersection([]int{}, []int{1})); n != 0 {
+		t.Errorf("len(Intersection([], [1])) = %d, want 0", n)
+	}
+	if n := len(Intersection([]int{1}, []int{})); n != 0 {
+		t.Errorf("len(Intersection([1], [])) = %d, want 0", n)
+	}
+}
 
 func TestDiff(t *testing.T) {
-	type args[T SliceElementType] struct {
-		A []T
-		B []T
+	a := []int{1, 2, 3, 4}
+	b := []int{2, 4}
+	got := Diff(a, b)
+	assertEqual(t, "Diff(a, b)", got, []int{1, 3})
+	// 注意：Diff 会原地排序 a 和 b（现有行为，见问题清单）
+}
+
+func TestCloneDiff(t *testing.T) {
+	a := []int{3, 1, 2}
+	b := []int{2}
+	got := CloneDiff(a, b)
+	assertEqual(t, "CloneDiff(a, b)", got, []int{1, 3})
+	assertEqual(t, "CloneDiff 后原 a", a, []int{3, 1, 2}) // 不应被修改
+	assertEqual(t, "CloneDiff 后原 b", b, []int{2})       // 不应被修改
+}
+
+func TestUnion(t *testing.T) {
+	assertEqual(t, "Union", Union([]int{1, 2}, []int{2, 3}), []int{1, 2, 3})
+	assertEqual(t, "Union nil A", Union[int](nil, []int{1}), []int{1})
+}
+
+func TestConvertTo(t *testing.T) {
+	got := ConvertTo([]int{1, 2, 3}, func(v int) string { return strconv.Itoa(v) })
+	assertEqual(t, "ConvertTo", got, []string{"1", "2", "3"})
+}
+
+func TestPluckToMap(t *testing.T) {
+	type kv struct {
+		K int
+		V string
 	}
-	type testCase[T SliceElementType] struct {
-		name string
-		args args[T]
-		want []T
+	toPair := func(item kv) (int, string) { return item.K, item.V }
+
+	got := PluckToMap([]kv{{1, "a"}, {2, "b"}}, toPair)
+	if want := map[int]string{1: "a", 2: "b"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("PluckToMap = %v, want %v", got, want)
 	}
-	tests := []testCase[int]{
-		{
-			name: "Int",
-			args: args[int]{
-				A: []int{1, 3, 4, 2, 8, 7},
-				B: []int{3, 2},
-			},
-			want: []int{1, 4, 8, 7},
-		},
+
+	// 键冲突时后写入者覆盖
+	got2 := PluckToMap([]kv{{1, "a"}, {1, "c"}}, toPair)
+	if want2 := map[int]string{1: "c"}; !reflect.DeepEqual(got2, want2) {
+		t.Errorf("PluckToMap(键冲突) = %v, want %v", got2, want2)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := Diff(tt.args.A, tt.args.B); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Diff() = %v, want %v", got, tt.want)
-			}
-		})
+
+	if n := len(PluckToMap([]kv(nil), toPair)); n != 0 {
+		t.Errorf("len(PluckToMap(nil)) = %d, want 0", n)
+	}
+}
+
+func TestPtrSlice(t *testing.T) {
+	src := []int{1, 2, 3}
+	got := PtrSlice(src)
+	if len(got) != 3 || *got[0] != 1 || *got[1] != 2 || *got[2] != 3 {
+		t.Fatalf("PtrSlice(%v) = %v, want 每个指针指向对应元素", src, got)
+	}
+
+	// 修改指针指向的值不应影响原切片（元素为独立副本）
+	*got[0] = 100
+	if src[0] != 1 {
+		t.Errorf("PtrSlice 与原切片共享元素：修改后 src[0] = %d", src[0])
+	}
+
+	if n := len(PtrSlice([]int{})); n != 0 {
+		t.Errorf("len(PtrSlice([])) = %d, want 0", n)
+	}
+	if n := len(PtrSlice[int](nil)); n != 0 {
+		t.Errorf("len(PtrSlice[int](nil)) = %d, want 0", n)
+	}
+}
+
+func TestValueSlice(t *testing.T) {
+	a, b := 1, 2
+	got := ValueSlice([]*int{&a, nil, &b})
+	if len(got) != 3 || got[0] != 1 || got[1] != 0 || got[2] != 2 {
+		t.Errorf("ValueSlice([%d, nil, %d]) = %v, want [1 0 2]", a, b, got)
+	}
+
+	if n := len(ValueSlice([]*int{})); n != 0 {
+		t.Errorf("len(ValueSlice([])) = %d, want 0", n)
+	}
+	if n := len(ValueSlice[int](nil)); n != 0 {
+		t.Errorf("len(ValueSlice[int](nil)) = %d, want 0", n)
 	}
 }

@@ -43,26 +43,33 @@ func Join[T NumberSliceElementType | UnsignedNumberSliceElementType | float32 | 
 	return s.String()
 }
 
+// ToInt64Slice 将数值切片转换为 []int64，空切片返回 nil。
 func ToInt64Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int64 {
 	return ToNumberSlice(t, int64(0))
 }
 
+// ToInt32Slice 将数值切片转换为 []int32，空切片返回 nil。
 func ToInt32Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int32 {
 	return ToNumberSlice(t, int32(0))
 }
 
+// ToInt16Slice 将数值切片转换为 []int16，空切片返回 nil。
 func ToInt16Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int16 {
 	return ToNumberSlice(t, int16(0))
 }
 
+// ToInt8Slice 将数值切片转换为 []int8，空切片返回 nil。
 func ToInt8Slice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int8 {
 	return ToNumberSlice(t, int8(0))
 }
 
+// ToIntSlice 将数值切片转换为 []int，空切片返回 nil。
 func ToIntSlice[T NumberSliceElementType | UnsignedNumberSliceElementType](t []T) []int {
 	return ToNumberSlice(t, int(0))
 }
 
+// ToNumberSlice 将 T 类型数值切片逐元素转换为 U 类型切片。
+// 参数 u 仅用于类型推断，传对应类型零值即可；空切片返回 nil。
 func ToNumberSlice[T NumberSliceElementType | UnsignedNumberSliceElementType, U NumberSliceElementType](t []T, u U) []U {
 	if len(t) == 0 {
 		return nil

@@ -437,6 +437,15 @@ func Test_timeSpan_Fill(t *testing.T) {
 			},
 			want: 24,
 		},
+		{
+			name:   "fullDay per 90min",
+			fields: fields{span: 90},
+			args: args{
+				m:    map[PointOfTimeSlice]int{"03:00": 50, "09:00": 90, "13:30": 70, "15:00": 30},
+				pots: []PointOfTimeSlice{"24:00"},
+			},
+			want: 16,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

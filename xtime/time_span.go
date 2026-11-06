@@ -182,6 +182,10 @@ func (ts *timeSpan) Fill(m map[PointOfTimeSlice]int, pots ...PointOfTimeSlice) m
 	} else {
 		till, _ = ts.timeValue(string(pots[0]))
 	}
+	// "24:00" 作为全天结束的排除端点，按 23:59 处理，避免生成零时长的 "24:00" 桶
+	if till == 1440 {
+		till = 1439
+	}
 	tillHour := till / 60
 	tillMinute := till % 60
 	lastVal := 0
@@ -212,6 +216,10 @@ func (ts *timeSpan) FillForStrKey(m map[string]int, pots ...string) map[string]i
 		till, _ = ts.timeValue(time.Now().Format("15:04"))
 	} else {
 		till, _ = ts.timeValue(string(pots[0]))
+	}
+	// "24:00" 作为全天结束的排除端点，按 23:59 处理，避免生成零时长的 "24:00" 桶
+	if till == 1440 {
+		till = 1439
 	}
 	tillHour := till / 60
 	tillMinute := till % 60
